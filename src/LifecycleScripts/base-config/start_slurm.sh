@@ -16,6 +16,7 @@ main() {
       echo "[INFO] This is a Controller node. Start slurm controller daemon..."
 
       systemctl enable --now slurmctld
+      mv /etc/systemd/system/slurmd{,_DO_NOT_START_ON_CONTROLLER}.service
   fi
 
   if [[ $1 == "compute" ]] || [[ $1 == "login" ]]; then
