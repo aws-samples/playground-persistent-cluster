@@ -12,11 +12,10 @@ mkdir -p $DEST_DIR
 cd $DEST_DIR
 
 latest_download_url() {
-  curl --silent "https://api.github.com/repos/${GH}/releases/latest" |   # Get latest release from GitHub api
+  curl "https://api.github.com/repos/${GH}/releases/latest" |   # Get latest release from GitHub api
     grep "\"browser_download_url\": \"https.*\/delta-.*-$(uname -i)-unknown-linux-musl.tar.gz" |  # Get download url
     sed -E 's/.*"([^"]+)".*/\1/'                                         # Pluck JSON value
 }
-
 
 LATEST_DOWNLOAD_URL=$(latest_download_url)
 TARBALL=${LATEST_DOWNLOAD_URL##*/}

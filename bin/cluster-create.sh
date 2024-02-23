@@ -51,6 +51,27 @@ parse_args() {
 
 parse_args $@
 
+# We've been hit several time with stale LCC scripts on S3, so let's enforce the sync every time
+# we create a cluster.
+#
+# Utility function to get script's directory (deal with Mac OSX quirkiness).
+# This function is ambidextrous as it works on both Linux and OSX.
+get_bin_dir() {
+    local READLINK=readlink
+    if [[ $(uname) == 'Darwin' ]]; then
+        READLINK=greadlink
+        if [ $(which greadlink) == '' ]; then
+            echo '[ERROR] Mac OSX requires greadlink. Install with "brew install greadlink"' >&2
+            exit 1
+        fi
+    fi
+
+    local BIN_DIR=$(dirname "$($READLINK -f ${BASH_SOURCE[0]})")
+    echo -n ${BIN_DIR}
+}
+BIN_DIR=$(get_bin_dir)
+$BIN_DIR/prep-s3.sh
+
 set -x
 aws sagemaker create-cluster "${aws_cli_args[@]}" \
     --cli-input-json file://cluster-config.json \

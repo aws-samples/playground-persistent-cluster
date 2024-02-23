@@ -8,11 +8,22 @@ BIN_DIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 chmod ugo+x $BIN_DIR/initsmhp/*.sh
 
 bash -x $BIN_DIR/initsmhp/setup-timesync.sh
-bash -x $BIN_DIR/initsmhp/pkgs.sh
-bash -x $BIN_DIR/initsmhp/delta.sh
-bash -x $BIN_DIR/initsmhp/duf.sh
-bash -x $BIN_DIR/initsmhp/s5cmd.sh
-bash -x $BIN_DIR/initsmhp/tmux.sh
+
+declare -a PKGS_SCRIPTS=(
+    install-pkgs.sh
+    install-delta.sh
+    install-duf.sh
+    install-s5cmd.sh
+    install-tmux.sh
+    install-mount-s3.sh
+)
+mkdir /var/log/initsmhp
+for i in "${PKGS_SCRIPTS[@]}"; do
+    bash -x $BIN_DIR/initsmhp/$i &> /var/log/initsmhp/$i.txt \
+        && echo "SUCCESS: $i" >> /var/log/initsmhp/initsmhp.txt \
+        || echo "FAIL: $i" >> /var/log/initsmhp/initsmhp.txt
+done
+
 bash -x $BIN_DIR/initsmhp/fix-profile.sh
 bash -x $BIN_DIR/initsmhp/ssh-to-compute.sh
 bash -x $BIN_DIR/initsmhp/adjust-git.sh

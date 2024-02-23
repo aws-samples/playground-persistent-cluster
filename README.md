@@ -1,84 +1,43 @@
-# Amazon SageMaker HyperPod: Advance Quickstart
+# Advance and experimental quickstart for Amazon SageMaker HyperPod
 
-This is a concise (and opinionated) quickstart to setup an advance Amazon SageMaker HyperPod
-cluster.
+Before proceeding, please read the [prerequisites](PREREQUISITES.md).
 
-- **It assumes some level of familiarities with AWS CLI.**
+## 1. Changes to the reference LCC scripts
 
-- **It's meant for those who are comfortable with cross-referencing the source materials
-  ([workshop](https://catalog.workshops.aws/sagemaker-hyperpod/en-US),
-  [documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html), and
-  [reference
-  architecture](https://github.com/aws-samples/awsome-distributed-training/tree/main/1.architectures/5.sagemaker-hyperpod)).**
+Changelogs against
+[adt#76f9956](https://github.com/aws-samples/awsome-distributed-training/tree/76f995674b1c2e07e25814b15262baac8abc2bcd):
 
-- The expected workflow is: _clone this repo => edit some files => run 1+ wrapper scripts_.
-
-<span style="color: firebrick;"><b>TODO: remind users to always refresh scripts (lcc, utilities)
-from the adt repo. Also need to document which should be refreshed, which should not.</b></span>
-
-## 1. Things to keep in minds all the time
-
-1. Before running a command, _make it a habit to always review_ scripts, configurations, or whatever
-   files involved. Very frequently, this repo requires you to edit files, or provides explanations,
-   tips and tricks in the form of comments within various files.
-
-2. All CLI instructions assumes the current directory is this repo, e.g., when you see these
-   instructions
-
-    ```bash
-    python bin/some_example.py
-    ls -al src/
-    ```
-
-    it really means
-
-    ```console
-    # Change directory to this repo. Please adjust to the actual path to the repo on your computer.
-    cd /home/ubuntu/amazon-sagemaker-hyperpod-advance-quickstart
-
-    # Then, the actual examples...
-    python bin/some_example.py
-    ...
-    ```
-
-3. Everytime you start a new shell, you must load the environment variables from `profile.sh`  as
-   follows:
-
-    ```bash
-    # One time activity: update profile.sh. Below example use vi as the text editor
-    $ vi profile.sh
-    ...
-
-    # Load env. vars to the current shell.
-    $ source profile.sh
-
-    # Sample environment variables to verify profile.sh was sourced successfully.
-    $ env | grep ^SMHP_
-    ```
-
-4. `awscli` tips and tricks.
-
-    Set the `AWS_PROFILE` and `AWS_REGION` environment variables to simplify `aws` CLI by not having
-    to always specify `--profile=xxx --region=yyy` to all `aws` cli invocations.
-
-    You may also set the `AWS_ACCOUNT` environment variable in advance to easily use this in various
-    places (e.g., to include account id in your S3 bucket to ensure uniqueness).
+1. require FSx Lustre, and mount it `/fsx`
+2. home directories on shared file system
+    - `ubuntu`: relocate home directory to `/fsx/ubuntu`, and generate a new ssh keypair for if it
+      doesn't exist on `/fsx/ubuntu/.ssh`
+    - Other users: set home directories to `/fsx/home/<USERNAME>`
+3. enable [time synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
+   to prevent time drift from causing torchrun to fail fast (details
+   [here](https://github.com/pytorch/pytorch/issues/76287#issuecomment-1958685480)).
+4. mask unnecessary Slurm daemons on nodes
+   - mask `slurmd` on controller node
+   - mask `slurmctld` on compute nodes
+   - mask `slurmctld` and `slurmd` on login nodes.
+5. enable [enroot containers](https://github.com/NVIDIA/enroot). At this moment, please perform
+   container operations (including building images) on compute nodes with NVMe. Avoid using the
+   controller or login nodes for such purposes, as their low root volume size could easily cause
+   them to freeze, rendering them (and potentially the whole cluster) unusable.
+6. enable multi-users via LDAPS. Note that're two independent parts:
+   1. an [example](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint) to setup an LDAPS
+      endpoint. Ignore this when you have an existing LDAPS.
+   2. an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
+      to an LDAPS endpoint.
+7. [utility scripts](src/sample-slurm-jobs) for the cluster: trigger unhealthy instance and
+   auto-resume Slurm step, probe ami, etc.
+8. other opinionated changes to shell and environment. Feel free to customize the
+   [initsmhp](src/LifecycleScripts/base-config/initsmhp.sh) scripts.
 
 ## 2. Architecture
 
-We will setup a HyperPod cluster that:
+![Architecture](doc/architecture.png)
 
-1. mounts an FSx Lustre filesystem
-   - Relocate the home directory of user `ubuntu` to `/fsx/ubuntu`
-   - Relocate home directories of other users to `/fsx/home/<USERNAME>`
-2. supports running [enroot containers](https://github.com/NVIDIA/enroot) on Slurm (via
-   [pyxis](https://github.com/NVIDIA/pyxis)).
-3. supports multi-users backed by an [AWS Managed Microsoft
-   AD](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html).
-4. incorporates other opinionated tweaks to the shell environment (see
-   [`initsmhp.sh`](src/LifecycleScripts/base-config/initsmhp.sh)).
-
-## 3. Deploy HyperPod cluster
+## 3. Deploy cluster
 
 This section shows the end-to-end deployment for all the capabilities in [Section
 2](#2-architecture). Below are the skeleton of the steps:
@@ -89,7 +48,7 @@ This section shows the end-to-end deployment for all the capabilities in [Sectio
 # Step 3.1. Create S3 bucket in whatever way you like
 # Step 3.2. Create a self-signed certificate and LDAP auth token
 
-# Step 3.3. Environment variables
+# Step 3.3. Update environment variables
 vi profile.sh
 source profile.sh
 
@@ -132,6 +91,9 @@ please click below for the added instructions.
 Make sure to block the public access.
 
 ### 3.2. Create a self-signed certificate and an LDAP authentication token
+
+<span style="color:firebrick;background-color:yellow"><b>🚨🚨🚨 Skip this step when you're going to
+connect to your existing LDAPS 🚨🚨🚨</b></span>
 
 Now, let's follow **some** of the steps in [AWS ParallelCluster
 tutorial](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_05_multi-user-ad.html).
@@ -200,6 +162,9 @@ You may create an FSx Lustre filesystem using the AWS console. Make sure to sele
 group from the VPC stack.
 
 ### 3.6. Create a new AWS Managed Microsoft AD with LDAPS endpoint
+
+<span style="color:firebrick;background-color:yellow"><b>🚨🚨🚨 Skip this step when you're going to
+connect to your existing LDAPS 🚨🚨🚨</b></span>
 
  Follow the [AWS ParallelCluster
  tutorial](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_05_multi-user-ad.html),
@@ -319,9 +284,10 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
 
-## 8. Acknowledgements
+## 8. References
 
-1. [AWS Workshop: Amazon SageMaker HyperPod](https://catalog.workshops.aws/sagemaker-hyperpod/en-US).
+1. [AWS Workshop: Amazon SageMaker
+   HyperPod](https://catalog.workshops.aws/sagemaker-hyperpod/en-US).
 2. [aws-samples/awsome-distributed-training](https://github.com/aws-samples/awsome-distributed-training)
 3. [AWS ParallelCluster tutorial: Integrating Active
    Directory](<https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_05_multi-user-ad.html>).
