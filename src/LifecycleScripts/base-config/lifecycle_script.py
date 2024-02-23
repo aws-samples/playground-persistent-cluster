@@ -154,8 +154,12 @@ def main(args):
         ExecuteBashScript("./setup_sssd4ldaps.sh").run()
 
         # Note: comment the below lines to skip install docker and enroot
-        ExecuteBashScript("./utils/install_docker.sh").run()
-        ExecuteBashScript("./utils/install_enroot_pyxis.sh").run(node_type)
+        if node_type == SlurmNodeType.COMPUTE_NODE:
+            # At the moment, only compute nodes setup container runtime. Controller and login
+            # nodes have relatively low root volume. Hence, container operations on these nodes
+            # can easily cause the nodes to freeze, rendering your cluster unusable.
+            ExecuteBashScript("./utils/install_docker.sh").run()
+            ExecuteBashScript("./utils/install_enroot_pyxis.sh").run(node_type)
 
         # Note: comment the below lines to skip opininated environment setup
         ExecuteBashScript("./relocate_home.sh").run(node_type)

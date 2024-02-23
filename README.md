@@ -19,8 +19,10 @@ Changelogs against
    - mask `slurmd` on controller node
    - mask `slurmctld` on compute nodes
    - mask `slurmctld` and `slurmd` on login nodes.
-5. enable [enroot containers](https://github.com/NVIDIA/enroot) on Slurm (via
-   [pyxis](https://github.com/NVIDIA/pyxis)).
+5. enable [enroot containers](https://github.com/NVIDIA/enroot) only on compute nodes. We assume
+   the compute nodes have NVMe. If your compute nodes do not have NVMe, please comment out the
+   relevant lines in the `lifecycle_script.py`, because the low root volume size could easily cause
+   container operations to freeze the nodes.
 6. enable multi-users via LDAPS. Note that're two independent parts:
    1. an [example](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint) to setup an LDAPS
       endpoint. Ignore this when you have an existing LDAPS.
