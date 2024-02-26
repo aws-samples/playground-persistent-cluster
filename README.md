@@ -7,30 +7,32 @@ Before proceeding, please read the [prerequisites](PREREQUISITES.md).
 Changelogs against
 [adt#76f9956](https://github.com/aws-samples/awsome-distributed-training/tree/76f995674b1c2e07e25814b15262baac8abc2bcd):
 
-1. require FSx Lustre, and mount it `/fsx`
-2. home directories on shared file system
-    - `ubuntu`: relocate home directory to `/fsx/ubuntu`, and generate a new ssh keypair for if it
+- require an FSx Lustre, and mount it on `/fsx`
+- home directories on shared file system
+  - `ubuntu`: relocate home directory to `/fsx/ubuntu`, and generate a new ssh keypair for if it
       doesn't exist on `/fsx/ubuntu/.ssh`
-    - Other users: set home directories to `/fsx/home/<USERNAME>`
-3. enable [time synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
-   to prevent time drift from causing torchrun to fail fast (details
-   [here](https://github.com/pytorch/pytorch/issues/76287#issuecomment-1958685480)).
-4. mask unnecessary Slurm daemons on nodes
-   - mask `slurmd` on controller node
-   - mask `slurmctld` on compute nodes
-   - mask `slurmctld` and `slurmd` on login nodes.
-5. enable [enroot containers](https://github.com/NVIDIA/enroot). At this moment, please perform
+  - Other users: set home directories to `/fsx/home/<USERNAME>`
+- hardened `setup_mariadb_accounting.sh`.
+- enable [time synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
+   to prevent torchrun crashes
+   ([details](https://github.com/pytorch/pytorch/issues/76287#issuecomment-1958685480)).
+- mask unnecessary Slurm daemons
+  - mask `slurmd` on controller node
+  - mask `slurmctld` on compute nodes
+  - mask `slurmctld` and `slurmd` on login nodes.
+- enable [enroot containers](https://github.com/NVIDIA/enroot). At this moment, please perform
    container operations (including building images) on compute nodes with NVMe. Avoid using the
    controller or login nodes for such purposes, as their low root volume size could easily cause
    them to freeze, rendering them (and potentially the whole cluster) unusable.
-6. enable multi-users via LDAPS. Note that're two independent parts:
-   1. an [example](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint) to setup an LDAPS
+- enable multi-users via LDAPS. Note that're two independent parts:
+  - an [example](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint) to setup an LDAPS
       endpoint. Ignore this when you have an existing LDAPS.
-   2. an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
+  - an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
       to an LDAPS endpoint.
-7. [utility scripts](src/sample-slurm-jobs) for the cluster: trigger unhealthy instance and
-   auto-resume Slurm step, probe ami, etc.
-8. other opinionated changes to shell and environment. Feel free to customize the
+- utility scripts for SMHP client ([bin/](bin/))
+- utility scripts for the cluster ([src/sample-slurm-jobs/](/src/sample-slurm-jobs/)): trigger
+   unhealthy instance and auto-resume Slurm step, probe ami, etc.
+- other opinionated changes to shell and environment. Feel free to customize the
    [initsmhp](src/LifecycleScripts/base-config/initsmhp.sh) scripts.
 
 ## 2. Architecture
@@ -224,6 +226,9 @@ The expected outcomes of this section are:
    # Monitor cluster creation on AWS Console: SageMaker / HyperPod Clusters / Cluster Management
    # Alternatively, use below convenience util script. When watching, press ^C to stop.
    bin/watch-cluster.sh <CLUSTER_NAME> [--profile xxxxx]
+
+   # Watch cluster log. NOTE: remove `--watch` to do one-time fetch of the log
+   bin/cluster-log.sh <CLUSTER_NAME> --watch
    ```
 
 ## 4. Access HyperPod cluster
