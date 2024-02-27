@@ -18,8 +18,8 @@ Changelogs against
    ([details](https://github.com/pytorch/pytorch/issues/76287#issuecomment-1958685480)).
 - mask unnecessary Slurm daemons
   - mask `slurmd` on controller node
-  - mask `slurmctld` on compute nodes
-  - mask `slurmctld` and `slurmd` on login nodes.
+  - mask `slurmctld` on compute nodes and login nodes.
+- allow ssh to compute nodes without host keys.
 - enable [enroot containers](https://github.com/NVIDIA/enroot). At this moment, please perform
    container operations (including building images) on compute nodes with NVMe. Avoid using the
    controller or login nodes for such purposes, as their low root volume size could easily cause

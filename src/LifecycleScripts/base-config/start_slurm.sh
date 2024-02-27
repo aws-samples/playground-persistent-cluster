@@ -19,27 +19,18 @@ main() {
 
     mv /etc/systemd/system/slurmd{,_DO_NOT_START_ON_CONTROLLER}.service \
         || { echo "Failed to mask slurmd, perhaps the AMI already masked it?" ; }
-  elif [[ $1 == "compute" ]]; then
+  elif [[ $1 == "compute" ]] || [[ $1 == "login" ]]; then
     echo "[INFO] Running on $1 node. Start slurm daemon..."
 
+    # Login nodes must still restart slurmd to fetch slurm.conf to /var/spool/slurmd/, however
+    # slurmd won't run because slurm.conf does not contain login nodes.
     SLURMD_OPTIONS="--conf-server $CONTROLLER_IP_VALUES" envsubst < /etc/systemd/system/slurmd.service > slurmd.service
     mv slurmd.service /etc/systemd/system/
-
     systemctl daemon-reload
     systemctl enable --now slurmd
 
     mv /etc/systemd/system/slurmctld{,_DO_NOT_START_ON_CONTROLLER}.service \
         || { echo "Failed to mask slurmctldd, perhaps the AMI already masked it?" ; }
-  elif [[ $1 == "login" ]]; then
-    echo "[INFO] Running on $1 node."
-
-    mv /etc/systemd/system/slurmd{,_DO_NOT_START_ON_CONTROLLER}.service \
-        || { echo "Failed to mask slurmd, perhaps the AMI already masked it?" ; }
-    mv /etc/systemd/system/slurmctld{,_DO_NOT_START_ON_CONTROLLER}.service \
-        || { echo "Failed to mask slurmctldd, perhaps the AMI already masked it?" ; }
-  else
-    echo "Unknown instance group: $1"
-    exit -1
   fi
 
   echo "[INFO] Start Slurm Script completed"
