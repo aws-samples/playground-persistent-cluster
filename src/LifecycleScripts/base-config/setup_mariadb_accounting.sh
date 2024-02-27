@@ -3,8 +3,7 @@
 set -euo pipefail
 
 # https://askubuntu.com/a/1472412
-# Exclude special characters that break create_slurm_database(). During dev/test, I've seen '[" and
-# there could be possible more so exclude those too to be safe.
+# Exclude special characters that break create_slurm_database().
 EXCLUDED_CHAR="'\"\`\\[]{}()*"
 SLURM_DB_PASSWORD=$(apg -a 1 -M SNCL -m 10 -x 10 -n 1 -E "${EXCLUDED_CHAR}")
 
@@ -52,6 +51,7 @@ setup_mariadb() {
 create_slurm_database() {
   set +x
   echo "Creating accounting database"
+  local ESCAPED_SLURM_DB_PASSWORD=$(printf '%q' "$SLURM_DB_PASSWORD")
   SETUP_MYSQL=$(expect -c "
   set timeout 15
   log_file /var/log/provision/setup_mysql.log
@@ -61,7 +61,7 @@ create_slurm_database() {
   send \"\r\"
   sleep 1
   expect \"*]>\"
-  send \"grant all on slurm_acct_db.* TO 'slurm'@'localhost' identified by '${SLURM_DB_PASSWORD}' with grant option;\r\"
+  send \"grant all on slurm_acct_db.* TO 'slurm'@'localhost' identified by '${ESCAPED_SLURM_DB_PASSWORD}' with grant option;\r\"
   sleep 1
   expect \"*]>\"
   send \"create database slurm_acct_db;\r\"
@@ -90,12 +90,14 @@ create_slurmdbd_config() {
 # Append the accounting settings to accounting.conf, this file is empty by default and included into
 # slurm.conf. This is required for Slurm to enable accounting.
 add_accounting_to_slurm_config() {
-  cat >> $SLURM_ACCOUNTING_CONFIG_FILE << EOL
+    # `hostname -i` gave us "hostname: Name or service not known". So let's parse slurm.conf.
+    DBD_HOST=$(awk -F'[=(]' '/^SlurmctldHost=/ { print $NF }' /opt/slurm/etc/slurm.conf | tr -d ')')
+    cat >> $SLURM_ACCOUNTING_CONFIG_FILE << EOL
 # ACCOUNTING
 JobAcctGatherType=jobacct_gather/linux
 JobAcctGatherFrequency=30
 AccountingStorageType=accounting_storage/slurmdbd
-AccountingStorageHost=localhost
+AccountingStorageHost=$DBD_HOST
 AccountingStoragePort=6819
 EOL
 }
