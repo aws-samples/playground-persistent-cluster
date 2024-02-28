@@ -61,7 +61,6 @@ vi config-cluster.json src/lcc-data/provisioning_parameters.json
 python3 bin/validate-config.py
 ## Optional: customize files under src/LifecycleScripts/ and/or src/lcc-data/
 # vi ...
-bin/prep-s3.sh
 bin/cluster-create.sh <CLUSTER_NAME> [--profile xxxxx]
 bin/watch-cluster.sh <CLUSTER_NAME> [--profile xxxxx]    # Optional
 ```
