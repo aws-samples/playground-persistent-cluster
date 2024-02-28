@@ -71,15 +71,12 @@ please click below for the added instructions.
 <details>
 <summary><b>How to skip AD deployment</b></summary>
 
- To not setup AD (and the LDAPS integration with the cluster):
+To not setup AD (and the LDAPS integration with the cluster):
 
- 1. ignore [Section 3.2](#32-create-a-self-signed-certificate-and-an-ldap-authentication-token) and
-    [Section 3.6](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint).
- 2. in [Section 3.3](#33-edit-profilesh-then-on-your-shell-do-a-source-profilesh), make sure that
-    `profile.sh` sets `SMHP_LDAP_TOKEN_ARN` and `SMHP_LDAP_CERT_ARN` to blank values.
- 3. in [Section 3.7](#37-create-smhp-cluster), step 3, edit
-    `src/LifecycleScripts/lifecycle_script.py` to comment or delete the line that execute
-    `setup_sssd4ldaps.sh`.
+1. ignore [Section 3.2](#32-create-a-self-signed-certificate-and-an-ldap-authentication-token) and
+   [Section 3.6](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint).
+2. in [Section 3.3](#33-edit-profilesh-files-then-on-your-shell-do-a-source-profilesh), make sure that
+   `src/lcc-data/profile.sh` sets `SMHP_LDAP_TOKEN_ARN` and `SMHP_LDAP_CERT_ARN` to blank values.
 
 </details>
 
@@ -118,18 +115,22 @@ the `aws` CLIs.
 
     - `4. Import the certificate to AWS Certificate Manager (ACM).`
 
-### 3.3. Edit `profile.sh`, then on your shell do a `source ./profile.sh`
+### 3.3. Edit `profile.sh` files, then on your shell do a `source ./profile.sh`
 
-Review and edit `profile.sh`. You'll need these information:
+Review and edit `profile.sh`:
 
-- bucket name created in [Section 3.1](#31-create-an-s3-bucket)
+- use the bucket name created in [Section 3.1](#31-create-an-s3-bucket)
+- make sure that `SMHP_AZ_NAME` must include the AZ where your cluster will live.
+
+Review and edit `src/lcc-data/profile.sh`:
+
 - ARN of the LDAP read-only secret created in [Section
   3.2](#32-create-a-self-signed-certificate-and-an-ldap-authentication-token)
 - ARN to the certificate created in [Section
   3.2](#32-create-a-self-signed-certificate-and-an-ldap-authentication-token)
-
-The rest you can decide, but make sure that `SMHP_AZ_NAME` must include the AZ where your cluster
-will live.
+-
+  <span style="color:firebrick;background-color:yellow"><b>🚨🚨🚨 If you want to skip setting-up
+  LDAPS integration, just set both to <i>blank</i> values 🚨🚨🚨</b></span>
 
 After that, `source ./profile.sh` to set the environment variables for your current shell. The
 reminder of this quickstart will need these env vars. **REMINDER:** always do this step when

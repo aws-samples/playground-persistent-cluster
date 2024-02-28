@@ -19,6 +19,14 @@ set +x
 
 source ./profile.sh
 
+[[ $SMHP_LDAP_CERT_ARN == "" && $SMHP_LDAP_TOKEN_ARN == "" ]] \
+    && { echo "Skip sssd setup because both SMHP_LDAP_CERT_ARN and SMHP_LDAP_TOKEN_ARN are blanks." ; exit 0 ; } \
+    || true
+
+[[ $SMHP_LDAP_CERT_ARN == "" || $SMHP_LDAP_TOKEN_ARN == "" ]] \
+    && { echo "Error: one of SMHP_LDAP_CERT_ARN or SMHP_LDAP_TOKEN_ARN is blank." ; exit -1 ; } \
+    || true
+
 : "${SMHP_LDAP_DEFAULT_BIND_DN:=cn=ReadOnlyUser,ou=Users,ou=CORP,dc=corp,dc=example,dc=com}"
 : "${SMHP_LDAP_SEARCH_BASE:=DC=corp,DC=example,DC=com}"
 : "${SMHP_LDAP_URI:=corp.example.com}"
@@ -76,6 +84,6 @@ EOF
 chmod 600 /etc/sssd/sssd.conf
 
 aws acm --region $REGION get-certificate \
-    --certificate-arn ${$SMHP_LDAP_CERT_ARN} | jq -r '.Certificate' > /opt/domain-certificate.crt
+    --certificate-arn ${SMHP_LDAP_CERT_ARN} | jq -r '.Certificate' > /opt/domain-certificate.crt
 systemctl enable --now sssd.service
 pam-auth-update --enable mkhomedir
