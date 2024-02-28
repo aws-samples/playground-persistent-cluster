@@ -4,14 +4,10 @@ Before proceeding, please read the [prerequisites](PREREQUISITES.md).
 
 ## 1. Changes to the reference LCC scripts
 
-Changelogs against
-[adt#76f9956](https://github.com/aws-samples/awsome-distributed-training/tree/76f995674b1c2e07e25814b15262baac8abc2bcd):
+Changelogs against [adt#
+d5b0bd9](https://github.com/aws-samples/awsome-distributed-training/tree/d5b0bd9e2fb34b23046d539427d4fb1ef0eecabe):
 
 - require an FSx Lustre, and mount it on `/fsx`
-- home directories on shared file system
-  - `ubuntu`: relocate home directory to `/fsx/ubuntu`, and generate a new ssh keypair for if it
-      doesn't exist on `/fsx/ubuntu/.ssh`
-  - Other users: set home directories to `/fsx/home/<USERNAME>`
 - hardened `setup_mariadb_accounting.sh`.
 - enable [time synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
    to prevent torchrun crashes
