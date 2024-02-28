@@ -148,6 +148,7 @@ def main(args):
         if node_type == SlurmNodeType.HEAD_NODE:
             ExecuteBashScript("./setup_mariadb_accounting.sh").run()
 
+        ExecuteBashScript("./utils/motd.sh").run(node_type)
         ExecuteBashScript("./start_slurm.sh").run(node_type, ",".join(controllers))
 
         # Note: comment the below lines to skip setup multi-users with LDAPS.
