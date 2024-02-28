@@ -11,6 +11,8 @@ fi
 declare -a HELP=(
     "[-h|--help]"
     "[-c|--controller-group]"
+    "[-d|--cluster-id CLUSTER_ID]"
+    "[-i|--instance-id INSTANCE_ID]"
     "[-r|--region]"
     "[-p|--profile]"
     "CLUSTER_NAME"
