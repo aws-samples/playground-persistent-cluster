@@ -1,2 +1,2 @@
-localuser1,2001
-localuser2,2002
+localuser1,2001,/fsx/localuser1
+localuser2,2002,/fsx/localuser2

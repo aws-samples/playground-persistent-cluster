@@ -4,14 +4,10 @@ Before proceeding, please read the [prerequisites](PREREQUISITES.md).
 
 ## 1. Changes to the reference LCC scripts
 
-Changelogs against
-[adt#76f9956](https://github.com/aws-samples/awsome-distributed-training/tree/76f995674b1c2e07e25814b15262baac8abc2bcd):
+Changelogs against [adt#
+d5b0bd9](https://github.com/aws-samples/awsome-distributed-training/tree/d5b0bd9e2fb34b23046d539427d4fb1ef0eecabe):
 
 - require an FSx Lustre, and mount it on `/fsx`
-- home directories on shared file system
-  - `ubuntu`: relocate home directory to `/fsx/ubuntu`, and generate a new ssh keypair for if it
-      doesn't exist on `/fsx/ubuntu/.ssh`
-  - Other users: set home directories to `/fsx/home/<USERNAME>`
 - hardened `setup_mariadb_accounting.sh`.
 - enable [time synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
    to prevent torchrun crashes
@@ -51,7 +47,7 @@ This section shows the end-to-end deployment for all the capabilities in [Sectio
 # Step 3.2. Create a self-signed certificate and LDAP auth token
 
 # Step 3.3. Update environment variables
-vi profile.sh
+vi profile.sh src/lcc-data/profile.sh
 source profile.sh
 
 # Step 3.4. Create VPC with at least two AZs
@@ -210,15 +206,9 @@ The expected outcomes of this section are:
    they've been tailored to enable the cluster with the capabilities mentioned in [Section
    2](#2-architecture). However, feel free to make your own modifications, e.g., to disable what you
    don't need in `src/LifecycleScripts/base-config/lifecycle_script.py`, etc.
-4. Upload LCC scripts to the S3 bucket:
-
-   ```bash
-   bin/prep-s3.sh
-   ```
-
-5. Optionally, run `python3 bin/validate-config.py` to ensures the above configurations are sound.
+4. Optionally, run `python3 bin/validate-config.py` to ensures the above configurations are sound.
    Note that the `.py` scripts require `boto3`.
-6. Now it's time to create a cluster:
+5. Now it's time to create a cluster:
 
    ```bash
    bin/cluster-create.sh <CLUSTER_NAME> [--profile xxxx]
@@ -262,34 +252,15 @@ echo $HOME
 /fsx/home/user000
 ```
 
-## 5. Project Structure
-
-```text
-amazon-sagemaker-hyperpod-advance-quickstart
-|-- bin/
-|-- docs/
-|-- src
-|-- config-cluster.json
-|-- README.md
-
-# Misc. files
-|-- .editorconfig                # Editor config (for IDE / editor that support this)
-|-- .gitattributes               # Files that Git must give special treatments
-|-- .gitignore                   # Git ignore list
-|-- .markdownlint.jsonc          # Markdownlint configuration
-|-- .pre-commit-config.yaml      # Precommit hooks
-`-- LICENSE                      # License
-```
-
-## 6. Security
+## 5. Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
-## 7. License
+## 6. License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
 
-## 8. References
+## 7. References
 
 1. [AWS Workshop: Amazon SageMaker
    HyperPod](https://catalog.workshops.aws/sagemaker-hyperpod/en-US).
