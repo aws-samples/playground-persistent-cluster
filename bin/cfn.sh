@@ -4,6 +4,21 @@
 
 set -euo pipefail
 
+# Fail fast if one LDAP env. var is empty string, but the other LDAP env var is not.
+if [[ $SMHP_LDAP_TOKEN_ARN != "" && $SMHP_LDAP_CERT_ARN == "" ]]; then
+    echo "
+WARNING: one of SMHP_LDAP_TOKEN_ARN or SMHP_LDAP_CERT_ARN is empty. The CloudFormation template
+will not attach LDAP permissions to the execution role it creates.
+"
+    exit -1
+elif [[ $SMHP_LDAP_TOKEN_ARN == "" && $SMHP_LDAP_CERT_ARN != "" ]]; then
+echo "
+WARNING: one of SMHP_LDAP_TOKEN_ARN or SMHP_LDAP_CERT_ARN is empty. The CloudFormation template
+will not attach LDAP permissions to the execution role it creates.
+"
+    exit -1
+fi
+
 # Utility function to get script's directory (deal with Mac OSX quirkiness).
 # This function is ambidextrous as it works on both Linux and OSX.
 get_bin_dir() {
