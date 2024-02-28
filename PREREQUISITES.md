@@ -42,8 +42,8 @@ cluster.
    follows:
 
     ```bash
-    # One time activity: update profile.sh. Below example use vi as the text editor
-    $ vi profile.sh
+    # One time activity: update profile.sh files. Below example use vi as the text editor
+    $ vi profile.sh src/lcc-data/profile.sh
     ...
 
     # Load env. vars to the current shell.
