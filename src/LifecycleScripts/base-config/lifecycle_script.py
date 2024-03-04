@@ -150,23 +150,19 @@ def main(args):
 
         ExecuteBashScript("./utils/motd.sh").run(node_type)
         ExecuteBashScript("./start_slurm.sh").run(node_type, ",".join(controllers))
-
-        # Note: comment the below lines to skip setup multi-users with LDAPS.
         ExecuteBashScript("./setup_sssd4ldaps.sh").run()
-
-        # Note: comment the below lines to skip install docker and enroot
         ExecuteBashScript("./utils/install_docker.sh").run()
         ExecuteBashScript("./utils/install_enroot_pyxis.sh").run(node_type)
 
-        # # Note: Uncomment the below lines to install DCGM Exporter and EFA Node Exporter and Cluster Nodes. (Docker must also be installed above)
-        # if node_type == SlurmNodeType.COMPUTE_NODE:
-        #     ExecuteBashScript("./utils/install_dcgm_exporter.sh").run()
-        #     ExecuteBashScript("./utils/install_efa_node_exporter.sh").run()
+        if node_type == SlurmNodeType.COMPUTE_NODE:
+            # Install DCGM Exporter and EFA Node Exporter and Cluster Nodes. (Docker must also be installed above)
+            ExecuteBashScript("./utils/install_dcgm_exporter.sh").run()
+            ExecuteBashScript("./utils/install_efa_node_exporter.sh").run()
 
-        # # Note: Uncomment the below lines to install Slurm Exporter and Prometheus on the Controller Node.
-        # if node_type == SlurmNodeType.HEAD_NODE:
-        #     ExecuteBashScript("./utils/install_slurm_exporter.sh").run()
-        #     ExecuteBashScript("./utils/install_prometheus.sh").run()
+        if node_type == SlurmNodeType.HEAD_NODE:
+            # Install Slurm Exporter and Prometheus on the Controller Node.
+            ExecuteBashScript("./utils/install_slurm_exporter.sh").run()
+            ExecuteBashScript("./utils/install_prometheus.sh").run()
 
         # Note: comment the below lines to skip opininated environment setup
         ExecuteBashScript("./relocate_home.sh").run(node_type)

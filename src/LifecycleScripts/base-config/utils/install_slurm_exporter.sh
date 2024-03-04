@@ -12,7 +12,8 @@ if sudo systemctl is-active --quiet slurmctld; then
         echo "Go is already installed."
     fi
     echo "This was identified as the controller node because Slurmctld is running. Begining SLURM Exporter Installation"
-    git clone -b 0.20 https://github.com/vpenso/prometheus-slurm-exporter.git
+    # Dev branch to enable gpu accounting
+    git clone -b development https://github.com/vpenso/prometheus-slurm-exporter.git
     cd prometheus-slurm-exporter
     sudo make && sudo cp bin/prometheus-slurm-exporter /usr/bin/
     sudo tee /etc/systemd/system/prometheus-slurm-exporter.service > /dev/null <<EOF
@@ -21,7 +22,11 @@ Description=Prometheus SLURM Exporter
 
 [Service]
 Environment=PATH=/opt/slurm/bin:\$PATH
+<<<<<<< Updated upstream
 ExecStart=/usr/bin/prometheus-slurm-exporter
+=======
+ExecStart=/usr/bin/prometheus-slurm-exporter -gpus-acct
+>>>>>>> Stashed changes
 Restart=on-failure
 RestartSec=15
 Type=simple

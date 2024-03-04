@@ -7,6 +7,7 @@ echo "Retrieving IMDSv2 Token to fetch region of current EC2 Instance (Head Node
 TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" -s)
 REGION=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/placement/region)
 
+source ./profile.sh
 AMPREMOTEWRITEURL="${SMHP_AMP_REMOTE_WRITE_URL}"
 
 # Retrieve compute nodes from scontrol
