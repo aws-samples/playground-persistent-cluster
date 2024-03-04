@@ -24,10 +24,10 @@ Against [adt#76f9956](https://github.com/aws-samples/awsome-distributed-training
 - enable multi-users via LDAPS. Note that're two independent parts:
   - an [example](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint) to setup an LDAPS
       endpoint. Ignore this when you have an existing LDAPS.
-  - an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
+  - an [LCC script](../src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
       to an LDAPS endpoint.
-- utility scripts for SMHP client ([bin/](bin/))
+- utility scripts for SMHP client ([bin/](../bin))
 - utility scripts for the cluster ([src/sample-slurm-jobs/](/src/sample-slurm-jobs/)): trigger
    unhealthy instance and auto-resume Slurm step, probe ami, etc.
 - other opinionated changes to shell and environment. Feel free to customize the
-   [initsmhp](src/LifecycleScripts/base-config/initsmhp.sh) scripts.
+   [initsmhp](../src/LifecycleScripts/base-config/initsmhp.sh) scripts.

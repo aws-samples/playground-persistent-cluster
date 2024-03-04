@@ -1,6 +1,6 @@
 # Advance and experimental quickstart for Amazon SageMaker HyperPod
 
-Before proceeding, please read the [prerequisites](PREREQUISITES.md).
+Before proceeding, please read the [prerequisites](doc/PREREQUISITES.md).
 
 ## 1. Changes to the reference LCC scripts
 
