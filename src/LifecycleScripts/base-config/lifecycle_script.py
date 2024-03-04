@@ -151,7 +151,7 @@ def main(args):
         ExecuteBashScript("./utils/motd.sh").run(node_type)
         ExecuteBashScript("./start_slurm.sh").run(node_type, ",".join(controllers))
         ExecuteBashScript("./setup_sssd4ldaps.sh").run()
-        ExecuteBashScript("./utils/install_docker.sh").run()
+        ExecuteBashScript("./utils/install_docker.sh").run(node_type)
         ExecuteBashScript("./utils/install_enroot_pyxis.sh").run(node_type)
 
         if node_type == SlurmNodeType.COMPUTE_NODE:
