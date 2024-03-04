@@ -740,7 +740,66 @@ Resources:
                   - "ec2:CreateTags"
                 Resource:
                   - "arn:aws:ec2:*:*:network-interface/*"
+              - Sid: WriteClusterMetricsToAMP
+                Effect: Allow
+                Action:
+                  - aps:RemoteWrite
+                Resource:
+                  - !GetAtt APSWorkspace.Arn
 
+  AmazonGrafanaWorkspaceIAMRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - grafana.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+
+  AmazonGrafanaPrometheusPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: AmazonGrafana_Prometheus_policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - aps:ListWorkspaces
+          - aps:DescribeWorkspace
+          - aps:QueryMetrics
+          - aps:GetLabels
+          - aps:GetSeries
+          - aps:GetMetricMetadata
+          Resource: "*"
+      Roles: [!Ref AmazonGrafanaWorkspaceIAMRole]
+
+  AmazonGrafanaWorkspace:
+    Type: 'AWS::Grafana::Workspace'
+    Properties:
+      AccountAccessType: CURRENT_ACCOUNT
+      Name: !Sub ${AWS::StackName}-Dashboard
+      Description: Amazon Grafana Workspace to monitor SageMaker Cluster
+      AuthenticationProviders:
+        - AWS_SSO
+      PermissionType: SERVICE_MANAGED
+      RoleArn: !GetAtt
+        - AmazonGrafanaWorkspaceIAMRole
+        - Arn
+      DataSources: ["CLOUDWATCH", "PROMETHEUS"]
+      OrganizationRoleName: "ADMIN"
+
+  APSWorkspace:
+    Type: AWS::APS::Workspace
+    Properties:
+      Alias: !Sub ${AWS::StackName}-Hyperpod-WorkSpace
+      Tags:
+      - Key: Name
+        Value: SageMaker Hyperpod PrometheusMetrics
 
 #############
 ## Outputs ##
@@ -788,3 +847,7 @@ Outputs:
     Value: !If [ExecutionRoleCondition, !GetAtt ExecutionRole.Arn, !Ref AWS::NoValue]
     Export:
       Name: !Sub ${AWS::StackName}-ExecutionRole
+  AMPRemoteWriteURL:
+    Value: !Join ["" , [ !GetAtt APSWorkspace.PrometheusEndpoint , "api/v1/remote_write" ]]
+  GrafanWorkspaceURL:
+    Value: !Join ["" , [ "https://", !GetAtt AmazonGrafanaWorkspace.Endpoint ]]
