@@ -4,27 +4,22 @@ Before proceeding, please read the [prerequisites](doc/PREREQUISITES.md).
 
 ## 1. Changes to the reference LCC scripts
 
-Changelogs against [adt#
-d5b0bd9](https://github.com/aws-samples/awsome-distributed-training/tree/d5b0bd9e2fb34b23046d539427d4fb1ef0eecabe):
+Changelogs against [adt#39ca357](https://github.com/aws-samples/awsome-distributed-training/tree/39ca357f7a3df841ffd1232221cd12afcf791c30):
 
-- require an FSx Lustre, and mount it on `/fsx`
 - hardened `setup_mariadb_accounting.sh`.
 - enable [time synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
    to prevent torchrun crashes
    ([details](https://github.com/pytorch/pytorch/issues/76287#issuecomment-1958685480)).
-- mask unnecessary Slurm daemons
-  - mask `slurmd` on controller node
-  - mask `slurmctld` on compute nodes and login nodes.
 - allow ssh to compute nodes without host keys.
-- enable [enroot containers](https://github.com/NVIDIA/enroot). At this moment, please perform
-   container operations (including building images) on compute nodes with NVMe. Avoid using the
-   controller or login nodes for such purposes, as their low root volume size could easily cause
-   them to freeze, rendering them (and potentially the whole cluster) unusable.
+- enable [enroot containers](https://github.com/NVIDIA/enroot), but disable the CLIs for non-root
+  users on login and controller nodes which may have insufficient root volume for container
+  operations. Non-root users must perform container operations (e.g., build images) on compute
+  nodes with NVMe.
 - enable multi-users via LDAPS. Note that're two independent parts:
   - an [example](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint) to setup an LDAPS
-      endpoint. Ignore this when you have an existing LDAPS.
+    endpoint. Ignore this when you have an existing LDAPS.
   - an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
-      to an LDAPS endpoint.
+    to an LDAPS endpoint.
 - utility scripts for SMHP client ([bin/](bin/))
 - utility scripts for the cluster ([src/sample-slurm-jobs/](/src/sample-slurm-jobs/)): trigger
    unhealthy instance and auto-resume Slurm step, probe ami, etc.
@@ -62,7 +57,8 @@ python3 bin/validate-config.py
 ## Optional: customize files under src/LifecycleScripts/ and/or src/lcc-data/
 # vi ...
 bin/cluster-create.sh <CLUSTER_NAME> [--profile xxxxx]
-bin/watch-cluster.sh <CLUSTER_NAME> [--profile xxxxx]    # Optional
+bin/watch-cluster.sh <CLUSTER_NAME> [--profile xxxxx]          # Optional
+bin/cluster-log.sh <CLUSTER_NAME> [--profile xxxxx] --watch    # Optional
 ```
 
 Let us now proceed to the detail steps. Before proceeding, in case you don't wish to deploy an AD,
@@ -75,8 +71,9 @@ To not setup AD (and the LDAPS integration with the cluster):
 
 1. ignore [Section 3.2](#32-create-a-self-signed-certificate-and-an-ldap-authentication-token) and
    [Section 3.6](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint).
-2. in [Section 3.3](#33-edit-profilesh-files-then-on-your-shell-do-a-source-profilesh), make sure that
-   `src/lcc-data/profile.sh` sets `SMHP_LDAP_TOKEN_ARN` and `SMHP_LDAP_CERT_ARN` to blank values.
+2. in [Section 3.3](#33-edit-profilesh-files-then-on-your-shell-do-a-source-profilesh), make sure
+   that `src/lcc-data/profile.sh` sets `SMHP_LDAP_TOKEN_ARN` and `SMHP_LDAP_CERT_ARN` to blank
+   values.
 
 </details>
 
@@ -175,11 +172,11 @@ connect to your existing LDAPS 🚨🚨🚨</b></span>
     **REMINDER:** change the directory and domain name as needed, and optionally other information
     as you like.
 
- 1. Follow `Create an EC2 instance`, `Join your instance to the AD`, and `Add users to the AD`.
+ 2. Follow `Create an EC2 instance`, `Join your instance to the AD`, and `Add users to the AD`.
     **REMINDER**: make sure the `ReadOnlyUser` uses the same password as your AWS Secrets Manager
     secret.
 
- 1. Under `LDAPS with certificate verification (recommended) setup`, do all steps except what you've
+ 3. Under `LDAPS with certificate verification (recommended) setup`, do all steps except what you've
  done in [Section 3.2, no. 3](#32-create-a-self-signed-certificate-and-an-ldap-authentication-token)
  (i.e., skip `1`, `2`, and `4`).
 

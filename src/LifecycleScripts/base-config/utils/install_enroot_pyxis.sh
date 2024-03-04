@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ "$1" == "" ]] && NODE_TYPE=other || NODE_TYPE="$1"
+
 set -exuo pipefail
 
 BIN_DIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
@@ -34,7 +36,7 @@ fi
 rm -fr $SLURM_INSTALL_DIR/pyxis
 mkdir -p $SLURM_INSTALL_DIR/enroot/ $SLURM_INSTALL_DIR/pyxis/ $PYXIS_TMP_DIR
 
-PYXIS_VERSION=v0.16.1
+PYXIS_VERSION=v0.17.0
 ENROOT_VERSION=3.4.1
 arch=$(dpkg --print-architecture)
 cd $PYXIS_TMP_DIR
@@ -73,11 +75,11 @@ if [[ $(mount | grep /opt/dlami/nvme) ]]; then
     chmod 1777 /opt/dlami/nvme/tmp
     chmod 1777 /opt/dlami/nvme/tmp/enroot/
 
-    #mkdir -p /opt/dlami/nvme/tmp/enroot/data/
-    #chmod 1777 /opt/dlami/nvme/tmp/enroot/data/
+    mkdir -p /opt/dlami/nvme/tmp/enroot/data/
+    chmod 1777 /opt/dlami/nvme/tmp/enroot/data/
 
-    # mkdir -p /opt/dlami/nvme/enroot
-    # chmod 1777 /opt/dlami/nvme/enroot
+    mkdir -p /opt/dlami/nvme/enroot
+    chmod 1777 /opt/dlami/nvme/enroot
 
 fi
 
@@ -90,3 +92,11 @@ fi
 
 systemctl is-active --quiet slurmctld && systemctl restart slurmctld || echo "This instance does not run slurmctld"
 systemctl is-active --quiet slurmd    && systemctl restart slurmd    || echo "This instance does not run slurmd"
+
+# Draconian workaround for low root-volume on controller node: only root can execute container cli.
+if [[ -f /usr/bin/enroot ]]; then
+    if [[ "$NODE_TYPE" == "controller" || "$NODE_TYPE" == "login" ]]; then
+        chmod go-x /usr/bin/enroot
+    fi
+fi
+

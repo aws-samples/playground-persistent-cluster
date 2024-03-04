@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ "$1" == "" ]] && NODE_TYPE=other || NODE_TYPE="$1"
+
 set -exo pipefail
 
 echo "
@@ -55,3 +57,11 @@ fi
 
 systemctl daemon-reload
 systemctl restart docker
+
+# Draconian workaround for low root-volume on controller node: only root can execute container cli.
+if [[ -f /usr/bin/docker ]]; then
+    if [[ "$NODE_TYPE" == "controller" || "$NODE_TYPE" == "login" ]]; then
+        chmod go-x /usr/bin/docker
+    fi
+fi
+
