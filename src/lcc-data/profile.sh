@@ -8,3 +8,5 @@ export SMHP_LDAP_CERT_ARN=arn:aws:acm:REGION:111122223333:certificate/xxxx
 export SMHP_LDAP_DEFAULT_BIND_DN=cn=ReadOnlyUser,ou=Users,ou=CORP,dc=corp,dc=example,dc=com
 export SMHP_LDAP_SEARCH_BASE=DC=corp,DC=example,DC=com
 export SMHP_LDAP_URI=corp.example.com
+
+export SMHP_AMP_REMOTE_WRITE_URL=https://aps-workspaces.REGION.amazonaws.com/workspaces/ws-xxxx/api/v1/remote_write
