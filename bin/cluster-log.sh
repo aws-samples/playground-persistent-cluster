@@ -102,10 +102,6 @@ echo "Node Group: ${node_group}"
 echo "Cloudwatch log group: ${group}"
 echo "Cloudwatch log stream: ${stream}"
 
-# [[ $WATCH == 1 ]] \
-#     && $awslogs_prefix awslogs get -GS $group $stream --watch -i 30 -s10min "${awslogs_cli_args[@]}" \
-#     || $awslogs_prefix awslogs get -GS $group $stream -s4d "${awslogs_cli_args[@]}"
-
 [[ $WATCH == 1 ]] \
     && cmd="$awslogs_prefix awslogs get -GS $group $stream --watch -i 30 -s10min ${awslogs_cli_args[@]}" \
     || cmd="$awslogs_prefix awslogs get -GS $group $stream -s4d ${awslogs_cli_args[@]}"
