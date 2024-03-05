@@ -57,7 +57,7 @@ python3 bin/validate-config.py
 ## Optional: customize files under src/LifecycleScripts/ and/or src/lcc-data/
 # vi ...
 bin/cluster-create.sh <CLUSTER_NAME> [--profile xxxxx]
-bin/watch-cluster.sh <CLUSTER_NAME> [--profile xxxxx]          # Optional
+bin/cluster-watch.sh <CLUSTER_NAME> [--profile xxxxx]          # Optional
 bin/cluster-log.sh <CLUSTER_NAME> [--profile xxxxx] --watch    # Optional
 ```
 
@@ -210,11 +210,11 @@ The expected outcomes of this section are:
    ```bash
    bin/cluster-create.sh <CLUSTER_NAME> [--profile xxxx]
 
-   # Monitor cluster creation on AWS Console: SageMaker / HyperPod Clusters / Cluster Management
-   # Alternatively, use below convenience util script. When watching, press ^C to stop.
-   bin/watch-cluster.sh <CLUSTER_NAME> [--profile xxxxx]
+   # Monitor cluster creation on AWS Console (SageMaker / HyperPod Clusters / Cluster Management),
+   # or use below convenience util script. When watching, press ^C to stop.
+   bin/cluster-watch.sh <CLUSTER_NAME> [--profile xxxxx]
 
-   # Watch cluster log. NOTE: remove `--watch` to do one-time fetch of the log
+   # Watch cluster log during cluster creation. NOTE: remove `--watch` for one-time fetch of the log
    bin/cluster-log.sh <CLUSTER_NAME> --watch
    ```
 

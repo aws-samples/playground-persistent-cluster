@@ -15,6 +15,8 @@ declare -a HELP=(
     "[-i|--instance-id INSTANCE_ID]"
     "[-r|--region]"
     "[-p|--profile]"
+    "[-w|--watch]"
+    "[-f|--force-retry]"
     "CLUSTER_NAME"
     "[-- AWSLOGS_CLI_ARGS]"
 )
@@ -28,6 +30,7 @@ node_group="controller-machine"
 cluster_id=""
 instance_id=""
 WATCH=0
+FORCE_RETRY=0
 AWSLOGS_ARGS=0
 
 parse_args() {
@@ -63,6 +66,10 @@ parse_args() {
             ;;
         -w|--watch)
             WATCH=1
+            shift
+            ;;
+        -f|--force-retry)
+            FORCE_RETRY=1
             shift
             ;;
         --)
@@ -102,9 +109,35 @@ echo "Node Group: ${node_group}"
 echo "Cloudwatch log group: ${group}"
 echo "Cloudwatch log stream: ${stream}"
 
-[[ $WATCH == 1 ]] \
-    && cmd="$awslogs_prefix awslogs get -GS $group $stream --watch -i 30 -s10min ${awslogs_cli_args[@]}" \
-    || cmd="$awslogs_prefix awslogs get -GS $group $stream -s4d ${awslogs_cli_args[@]}"
+if [[ $WATCH == 1 ]]; then
+    cmd="$awslogs_prefix awslogs get -GS $group $stream --watch -i 30 -s10min ${awslogs_cli_args[@]}"
+    set +e
+    MAX_ATTEMPTS=10
+    for(( i=1; i <= ${MAX_ATTEMPTS}; ++i)) do
+        echo To fetch log with this command: "$cmd"
+        $cmd
 
-echo To fetch log with this command: "$cmd"
-$cmd
+        # Retval 0: ^C
+        # Retval 1: log group N/A, meaning LCC hasn't started yet.
+        # Retval 7: log stream not found within timeframe. Log group avail means LCC started, but
+        #           logstream too far back. User must re-execute with -- -s<XXX>
+        RETVAL=$?
+        if [[ $RETVAL != 1 && ${FORCE_RETRY} == 0 ]]; then
+            break
+        fi
+
+        echo "
+#################################################################################################
+# Failed attempt ${i} of ${MAX_ATTEMPTS}. Log group N/A, likely LCC hasn't started yet. To retry in 2 min...
+#################################################################################################
+
+"
+        sleep 120
+    done
+else
+    cmd="$awslogs_prefix awslogs get -GS $group $stream -s4d ${awslogs_cli_args[@]}"
+    echo To fetch log with this command: "$cmd"
+    $cmd
+fi
+
+

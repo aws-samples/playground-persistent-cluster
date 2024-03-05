@@ -7,12 +7,14 @@ declare -a HELP=(
     "[-h|--help]"
     "[-r|--region]"
     "[-p|--profile]"
+    "[-w|--watch]"
     "CLUSTER_NAME"
 )
 
+: "${SMHP_REGION:=}"
 declare -a aws_cli_args=()
 cluster_name=""
-: "${SMHP_REGION:=}"
+WATCH=0
 
 parse_args() {
     local key
@@ -31,6 +33,10 @@ parse_args() {
         -p|--profile)
             aws_cli_args+=(--profile "$2")
             shift 2
+            ;;
+        -w|--watch)
+            WATCH=1
+            shift
             ;;
         *)
             [[ "$cluster_name" == "" ]] \
@@ -51,10 +57,13 @@ parse_args() {
 
 parse_args $@
 
-watch --color -n10 "
-echo Describe cluster:
+if [[ $WATCH == 1 ]]; then
+    watch --color -n30 "
+echo Press ^C to exit...
+set -x
 aws sagemaker describe-cluster "${aws_cli_args[@]}" --cluster-name $cluster_name | jq -C .
-echo
-echo List cluster nodes:
-aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name | jq -C .
 "
+else
+    set -x
+    aws sagemaker describe-cluster "${aws_cli_args[@]}" --cluster-name $cluster_name | jq -C .
+fi
