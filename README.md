@@ -20,6 +20,7 @@ Changelogs against [adt#39ca357](https://github.com/aws-samples/awsome-distribut
     endpoint. Ignore this when you have an existing LDAPS.
   - an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
     to an LDAPS endpoint.
+- disable and mask [GDM (GNOME Display Manager)](https://en.wikipedia.org/wiki/GNOME_Display_Manager).
 - utility scripts for SMHP client ([bin/](bin/))
 - utility scripts for the cluster ([src/sample-slurm-jobs/](/src/sample-slurm-jobs/)): trigger
    unhealthy instance and auto-resume Slurm step, probe ami, etc.

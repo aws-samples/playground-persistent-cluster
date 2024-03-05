@@ -7,6 +7,7 @@ set -exuo pipefail
 BIN_DIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 chmod ugo+x $BIN_DIR/initsmhp/*.sh
 
+bash -x $BIN_DIR/initsmhp/disable-gui.sh
 bash -x $BIN_DIR/initsmhp/setup-timesync.sh
 
 declare -a PKGS_SCRIPTS=(
