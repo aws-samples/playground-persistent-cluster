@@ -22,11 +22,7 @@ Description=Prometheus SLURM Exporter
 
 [Service]
 Environment=PATH=/opt/slurm/bin:\$PATH
-<<<<<<< Updated upstream
-ExecStart=/usr/bin/prometheus-slurm-exporter
-=======
 ExecStart=/usr/bin/prometheus-slurm-exporter -gpus-acct
->>>>>>> Stashed changes
 Restart=on-failure
 RestartSec=15
 Type=simple
