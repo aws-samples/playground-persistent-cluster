@@ -61,9 +61,9 @@ if [[ $WATCH == 1 ]]; then
     watch --color -n30 "
 echo Press ^C to exit...
 set -x
-aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name | jq -C .
+aws sagemaker list-cluster-nodes ${aws_cli_args[@]} --cluster-name $cluster_name | jq -C .
 "
 else
     set -x
-    aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name | jq -C .
+    aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name | jq .
 fi

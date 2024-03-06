@@ -53,8 +53,8 @@ parse_args $@
 
 watch --color -n30 "
 echo Describe cluster:
-aws sagemaker describe-cluster "${aws_cli_args[@]}" --cluster-name $cluster_name | jq -C .
+aws sagemaker describe-cluster ${aws_cli_args[@]} --cluster-name $cluster_name | jq -C .
 echo
 echo List cluster nodes:
-aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name | jq -C .
+aws sagemaker list-cluster-nodes ${aws_cli_args[@]} --cluster-name $cluster_name | jq -C .
 "

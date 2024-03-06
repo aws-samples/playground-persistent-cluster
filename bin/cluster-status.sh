@@ -8,6 +8,7 @@ declare -a HELP=(
     "[-r|--region]"
     "[-p|--profile]"
     "[-w|--watch]"
+    "[-e|--export-cluster-config]"
     "CLUSTER_NAME"
 )
 
@@ -15,6 +16,7 @@ declare -a HELP=(
 declare -a aws_cli_args=()
 cluster_name=""
 WATCH=0
+EXPORT_CLUSTER_CONFIG=0
 
 parse_args() {
     local key
@@ -38,6 +40,10 @@ parse_args() {
             WATCH=1
             shift
             ;;
+        -e|--export-cluster-config)
+            EXPORT_CLUSTER_CONFIG=1
+            shift
+            ;;
         *)
             [[ "$cluster_name" == "" ]] \
                 && cluster_name="$key" \
@@ -53,17 +59,32 @@ parse_args() {
     fi
 
     [[ "${SMHP_REGION}" == "" ]] || aws_cli_args+=(--region $SMHP_REGION)
+
+    if [[ $EXPORT_CLUSTER_CONFIG == 1 ]]; then
+        local jmes="{
+    InstanceGroups: InstanceGroups[].{
+        InstanceGroupName: @.InstanceGroupName,
+        InstanceType: @.InstanceType,
+        InstanceCount: @.TargetCount,
+        LifeCycleConfig: @.LifeCycleConfig,
+        ExecutionRole: @.ExecutionRole,
+        ThreadsPerCore: @.ThreadsPerCore
+    }
+}"
+        [[ $WATCH == 0 ]] && aws_cli_args+=(--query "$jmes") || aws_cli_args+=(--query \"$jmes\")
+    fi
 }
 
 parse_args $@
 
 if [[ $WATCH == 1 ]]; then
+    # flatten_aws_cli_args="${aws_cli_args[@]}"
     watch --color -n30 "
 echo Press ^C to exit...
 set -x
-aws sagemaker describe-cluster "${aws_cli_args[@]}" --cluster-name $cluster_name | jq -C .
+aws sagemaker describe-cluster ${aws_cli_args[@]} --cluster-name $cluster_name | jq -C .
 "
 else
     set -x
-    aws sagemaker describe-cluster "${aws_cli_args[@]}" --cluster-name $cluster_name | jq -C .
+    aws sagemaker describe-cluster "${aws_cli_args[@]}" --cluster-name $cluster_name | jq .
 fi
