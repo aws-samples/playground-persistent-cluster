@@ -1,6 +1,6 @@
 # History
 
-## Tag v0.1.0
+## Tag v24.03.07
 
 ### Differences against [adt#39ca357](https://github.com/aws-samples/awsome-distributed-training/tree/39ca357f7a3df841ffd1232221cd12afcf791c30)
 
