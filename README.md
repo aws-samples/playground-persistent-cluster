@@ -4,7 +4,7 @@ Before proceeding, please read the [prerequisites](doc/PREREQUISITES.md).
 
 ## 1. Changes to the reference LCC scripts
 
-Changelogs against [adt#39ca357](https://github.com/aws-samples/awsome-distributed-training/tree/39ca357f7a3df841ffd1232221cd12afcf791c30):
+Differences against [adt#39ca357](https://github.com/aws-samples/awsome-distributed-training/tree/39ca357f7a3df841ffd1232221cd12afcf791c30):
 
 - hardened `setup_mariadb_accounting.sh`.
 - enable [time synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
@@ -21,7 +21,13 @@ Changelogs against [adt#39ca357](https://github.com/aws-samples/awsome-distribut
   - an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
     to an LDAPS endpoint.
 - disable and mask [GDM (GNOME Display Manager)](https://en.wikipedia.org/wiki/GNOME_Display_Manager).
-- utility scripts for SMHP client ([bin/](bin/))
+- utility scripts for SMHP client ([bin/](bin/)). Non-exhaustive highlights:
+  - `cluster-status.sh` can export the JSON payload returned by `aws sagemaker
+    describe-cluster ...` into the JSON format for `cluster-config.json`. Useful to regenerate a
+    `cluster-config.json` for another deployment.
+  - `cluster-log.sh` supports watch mode and one-time mode. The watch mode implements retry logic to
+    wait for LCC logs to appear in your Cloudwatch log streams.
+  - `show-az.sh` to quickly maps AZ name to AZ id. Typically used when planning cluster deployment.
 - utility scripts for the cluster ([src/sample-slurm-jobs/](/src/sample-slurm-jobs/)): trigger
    unhealthy instance and auto-resume Slurm step, probe ami, etc.
 - other opinionated changes to shell and environment. Feel free to customize the
