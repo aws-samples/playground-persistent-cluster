@@ -1,9 +1,8 @@
-# Change Logs
+# History
 
 ## Tag v0.1.0
 
-Differences against
-[adt#39ca357](https://github.com/aws-samples/awsome-distributed-training/tree/39ca357f7a3df841ffd1232221cd12afcf791c30):
+### Differences against [adt#39ca357](https://github.com/aws-samples/awsome-distributed-training/tree/39ca357f7a3df841ffd1232221cd12afcf791c30)
 
 - hardened `setup_mariadb_accounting.sh`.
 - enable [time synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
@@ -27,7 +26,7 @@ Differences against
 - other opinionated changes to shell and environment. Feel free to customize the
    [initsmhp](../src/LifecycleScripts/base-config/initsmhp.sh) scripts.
 
-Changelogs to the previous version:
+### Changelogs
 
 - new `bin/` utilities: `cluster-log.sh`, `cluster-nodes.sh`, `cluster-status.sh`, `show-az.sh`.
   - `cluster-status.sh` can export the JSON payload returned by `aws sagemaker
@@ -35,17 +34,16 @@ Changelogs to the previous version:
     `cluster-config.json` for another deployment.
   - `cluster-log.sh` supports watch mode and one-time mode. The watch mode implements retry logic to
     wait for LCC logs to appear in your Cloudwatch log streams.
-- backported `adt` scripts that relocate home directories to `/fsx` (PR #12).
+- backported `adt` scripts that relocate home directories to `/fsx` (PR [#12](https://github.com/aws-samples/playground-persistent-cluster/pull/12)).
 - upstreamed time synchronization to `adt` (PR aws-samples/awsome-distributed-training#172).
 - upstreamed Slurm-daemons masking to `adt` (PR aws-samples/awsome-distributed-training#169).
-- backported `adt` scripts that setup Prometheus + Grafana (PR #16).
-- upstreamed sacct-on-login-nodes (PR #10) to `adt` (PR
+- backported `adt` scripts that setup Prometheus + Grafana (PR [#16](https://github.com/aws-samples/playground-persistent-cluster/pull/16)).
+- upstreamed sacct-on-login-nodes (PR [#10](https://github.com/aws-samples/playground-persistent-cluster/pull/10)) to `adt` (PR
   aws-samples/awsome-distributed-training#164).
 
 ## Commit \#dbfc93d
 
-Differences against
-[adt#76f9956](https://github.com/aws-samples/awsome-distributed-training/tree/76f995674b1c2e07e25814b15262baac8abc2bcd)
+### Differences against [adt#76f9956](https://github.com/aws-samples/awsome-distributed-training/tree/76f995674b1c2e07e25814b15262baac8abc2bcd)
 
 - require an FSx Lustre, and mount it on `/fsx`
 - home directories on shared file system
