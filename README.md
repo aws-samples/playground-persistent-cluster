@@ -22,11 +22,15 @@ Differences against [adt#39ca357](https://github.com/aws-samples/awsome-distribu
     to an LDAPS endpoint.
 - disable and mask [GDM (GNOME Display Manager)](https://en.wikipedia.org/wiki/GNOME_Display_Manager).
 - utility scripts for SMHP client ([bin/](bin/)). Non-exhaustive highlights:
+  - `dashboard-cluster-creation.sh` to show side-by-side the cluster-creation status and the
+    controller logs. Require [tmux](https://github.com/tmux/tmux/wiki) and
+    [awslogs](https://github.com/jorgebastida/awslogs).
   - `cluster-status.sh` can export the JSON payload returned by `aws sagemaker
     describe-cluster ...` into the JSON format for `cluster-config.json`. Useful to regenerate a
     `cluster-config.json` for another deployment.
   - `cluster-log.sh` supports watch mode and one-time mode. The watch mode implements retry logic to
-    wait for LCC logs to appear in your Cloudwatch log streams.
+    wait for LCC logs to appear in your Cloudwatch log streams. Require
+    [awslogs](https://github.com/jorgebastida/awslogs).
   - `show-az.sh` to quickly maps AZ name to AZ id. Typically used when planning cluster deployment.
 - utility scripts for the cluster ([src/sample-slurm-jobs/](/src/sample-slurm-jobs/)): trigger
    unhealthy instance and auto-resume Slurm step, probe ami, etc.
