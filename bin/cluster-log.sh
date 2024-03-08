@@ -94,22 +94,27 @@ parse_args() {
 }
 
 parse_args $@
+
 [[ $cluster_id == "" ]] \
     && cluster_id=$(aws sagemaker describe-cluster "${aws_cli_args[@]}" --cluster-name $cluster_name | jq '.ClusterArn' | awk -F/ '{gsub(/"/, "", $NF); print $NF}')
-
-[[ $instance_id == "" ]] \
-    && instance_id=$(aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name --instance-group-name-contains ${node_group} | jq '.ClusterNodeSummaries[0].InstanceId' | tr -d '"')
-
 group=/aws/sagemaker/Clusters/${cluster_name}/${cluster_id}
-stream=LifecycleConfig/$node_group/$instance_id
 
+echo "Cluster name: ${cluster_name}"
 echo "Cluster id: ${cluster_id}"
-echo "Instance id: ${instance_id}"
-echo "Node Group: ${node_group}"
 echo "Cloudwatch log group: ${group}"
-echo "Cloudwatch log stream: ${stream}"
+
+get_instance_id_and_logstream() {
+    [[ $instance_id == "" || $instance_id == "null" ]] \
+        && instance_id=$(aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name --instance-group-name-contains ${node_group} | jq -r '.ClusterNodeSummaries[0].InstanceId' )
+    stream=LifecycleConfig/$node_group/$instance_id
+    echo "Node Group: ${node_group}"
+    echo "Instance id: ${instance_id}"
+    echo "Cloudwatch log stream: ${stream}"
+}
+
 
 if [[ $WATCH == 1 ]]; then
+    get_instance_id_and_logstream
     cmd="$awslogs_prefix awslogs get -GS $group $stream --watch -i 30 -s10min ${awslogs_cli_args[@]}"
     set +e
     MAX_ATTEMPTS=10
@@ -119,10 +124,11 @@ if [[ $WATCH == 1 ]]; then
 
         # Retval 0: ^C
         # Retval 1: log group N/A, meaning LCC hasn't started yet.
-        # Retval 7: log stream not found within timeframe. Log group avail means LCC started, but
-        #           logstream too far back. User must re-execute with -- -s<XXX>
+        # Retval 7: log stream not found within timeframe. May or may not retry:
+        # - if this happens after a few retries, probably create-cluster is ongoing. Continue retry.
+        # - else, logstream is too far back. In this case, user must re-execute with -- -s<XXX>.
         RETVAL=$?
-        if [[ $RETVAL != 1 && ${FORCE_RETRY} == 0 ]]; then
+        if (( $RETVAL != 1 && ${FORCE_RETRY} == 0 && $i <= 1 )); then
             break
         fi
 
@@ -135,9 +141,8 @@ if [[ $WATCH == 1 ]]; then
         sleep 120
     done
 else
+    get_instance_id_and_logstream
     cmd="$awslogs_prefix awslogs get -GS $group $stream -s4d ${awslogs_cli_args[@]}"
     echo To fetch log with this command: "$cmd"
     $cmd
 fi
-
-

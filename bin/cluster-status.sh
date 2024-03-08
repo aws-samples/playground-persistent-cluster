@@ -8,6 +8,7 @@ declare -a HELP=(
     "[-r|--region]"
     "[-p|--profile]"
     "[-w|--watch]"
+    "[-n|--watch-interval SECONDS]"
     "[-e|--export-cluster-config]"
     "CLUSTER_NAME"
 )
@@ -16,6 +17,7 @@ declare -a HELP=(
 declare -a aws_cli_args=()
 cluster_name=""
 WATCH=0
+WATCH_INTERVAL=60
 EXPORT_CLUSTER_CONFIG=0
 
 parse_args() {
@@ -38,6 +40,10 @@ parse_args() {
             ;;
         -w|--watch)
             WATCH=1
+            shift
+            ;;
+        -n|--watch-interval)
+            WATCH_INTERVAL="$2"
             shift
             ;;
         -e|--export-cluster-config)
@@ -79,7 +85,7 @@ parse_args $@
 
 if [[ $WATCH == 1 ]]; then
     # flatten_aws_cli_args="${aws_cli_args[@]}"
-    watch --color -n30 "
+    watch --color -n ${WATCH_INTERVAL} "
 echo Press ^C to exit...
 set -x
 aws sagemaker describe-cluster ${aws_cli_args[@]} --cluster-name $cluster_name | jq -C .

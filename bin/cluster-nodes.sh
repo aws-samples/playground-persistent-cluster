@@ -58,7 +58,7 @@ parse_args() {
 parse_args $@
 
 if [[ $WATCH == 1 ]]; then
-    watch --color -n30 "
+    watch --color -n60 "
 echo Press ^C to exit...
 set -x
 aws sagemaker list-cluster-nodes ${aws_cli_args[@]} --cluster-name $cluster_name | jq -C .

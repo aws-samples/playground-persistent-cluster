@@ -51,7 +51,7 @@ parse_args() {
 
 parse_args $@
 
-watch --color -n30 "
+watch --color -n60 "
 echo Describe cluster:
 aws sagemaker describe-cluster ${aws_cli_args[@]} --cluster-name $cluster_name | jq -C .
 echo

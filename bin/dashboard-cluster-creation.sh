@@ -64,7 +64,7 @@ parse_args $@
 set -x
 tmux \
     new-session "cluster-status.sh ${args[@]} ${cluster_name} --watch" ';' \
-    split-window -h "cluster-log.sh ${args[@]} ${cluster_name} --watch -- ${awslogs_cli_args[@]}" ';' \
+    split-window -h "sleep 1 ; cluster-log.sh ${args[@]} ${cluster_name} --watch -- ${awslogs_cli_args[@]}" ';' \
     set -w remain-on-exit on ';' \
     bind-key e kill-session ';' \
     rename-window "Press C-e to exit... (By default: C is Ctrl-B)"
