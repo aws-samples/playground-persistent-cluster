@@ -10,11 +10,11 @@ fi
 
 declare -a HELP=(
     "[-h|--help]"
+    "[-r|--region]"
+    "[-p|--profile]"
     "[-c|--controller-group]"
     "[-d|--cluster-id CLUSTER_ID]"
     "[-i|--instance-id INSTANCE_ID]"
-    "[-r|--region]"
-    "[-p|--profile]"
     "[-w|--watch]"
     "[-f|--force-retry]"
     "CLUSTER_NAME"
