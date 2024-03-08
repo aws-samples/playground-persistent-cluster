@@ -4,12 +4,12 @@ Before proceeding, please read the [prerequisites](doc/PREREQUISITES.md).
 
 ## 1. Changes to the reference LCC scripts
 
-Differences against [adt#39ca357](https://github.com/aws-samples/awsome-distributed-training/tree/39ca357f7a3df841ffd1232221cd12afcf791c30):
+Differences against [adt#b72144b](https://github.com/aws-samples/awsome-distributed-training/tree/b72144be6f6ebf3ee4cd271bc5b2964931e4e094):
 
 - hardened `setup_mariadb_accounting.sh`.
-- enable [time synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
-   to prevent torchrun crashes
-   ([details](https://github.com/pytorch/pytorch/issues/76287#issuecomment-1958685480)).
+- disable network namespace in [time
+  synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html) service to
+  prevent random crashes.
 - allow ssh to compute nodes without host keys.
 - enable [enroot containers](https://github.com/NVIDIA/enroot), but disable the CLIs for non-root
   users on login and controller nodes which may have insufficient root volume for container
