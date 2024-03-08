@@ -6,10 +6,9 @@ Before proceeding, please read the [prerequisites](doc/PREREQUISITES.md).
 
 Differences against [adt#b72144b](https://github.com/aws-samples/awsome-distributed-training/tree/b72144be6f6ebf3ee4cd271bc5b2964931e4e094):
 
+- deprecate timesync LCC. Script is still available for older clusters that need it applied in
+  ad-hoc fashion (and it ensures chrony does not start with a network namespace).
 - hardened `setup_mariadb_accounting.sh`.
-- disable network namespace in [time
-  synchronization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html) service to
-  prevent random crashes.
 - allow ssh to compute nodes without host keys.
 - enable [enroot containers](https://github.com/NVIDIA/enroot), but disable the CLIs for non-root
   users on login and controller nodes which may have insufficient root volume for container
