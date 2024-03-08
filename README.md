@@ -1,5 +1,7 @@
 # Advance and experimental quickstart for Amazon SageMaker HyperPod
 
+This repo demonstrates a git-centric workflow to deploy Amazon SageMaker HyperPod clusters, with quality-of-life improvements and sample customizations
+
 Before proceeding, please read the [prerequisites](doc/PREREQUISITES.md).
 
 ## 1. Changes to the reference LCC scripts
