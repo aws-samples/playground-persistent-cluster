@@ -5,7 +5,8 @@ quality-of-life improvements and advance architecture.
 
 ![Architecture](doc/architecture.png)
 
-Before proceeding, please read the [prerequisites](doc/PREREQUISITES.md).
+Unsure if this repo is right for you? Not to worry, we invite you to check if the [vibe of this
+repo](doc/ABOUT.md) resonates with you, before making an informed decision.
 
 <details>
 <summary><b>Differences against <a href="https://github.com/aws-samples/awsome-distributed-training/tree/b72144be6f6ebf3ee4cd271bc5b2964931e4e094">adt#b72144b</a></b></summary>
@@ -16,21 +17,22 @@ Before proceeding, please read the [prerequisites](doc/PREREQUISITES.md).
 - allow ssh to compute nodes without host keys.
 - enable [enroot containers](https://github.com/NVIDIA/enroot), but disable the CLIs for non-root
   users on login and controller nodes which may have insufficient root volume for container
-  operations. Non-root users must perform container operations (e.g., build images) on compute
-  nodes with NVMe.
+  operations. Non-root users must perform container operations (e.g., build images) on compute nodes
+  with NVMe.
 - enable multi-users via LDAPS. Note that're two independent parts:
   - an [example](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint) to setup an LDAPS
     endpoint. Ignore this when you have an existing LDAPS.
   - an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
     to an LDAPS endpoint.
-- disable and mask [GDM (GNOME Display Manager)](https://en.wikipedia.org/wiki/GNOME_Display_Manager).
+- disable and mask [GDM (GNOME Display
+  Manager)](https://en.wikipedia.org/wiki/GNOME_Display_Manager).
 - utility scripts for SMHP client ([bin/](bin/)). Non-exhaustive highlights:
   - `dashboard-cluster-creation.sh` to show side-by-side the cluster-creation status and the
     controller logs. Require [tmux](https://github.com/tmux/tmux/wiki) and
     [awslogs](https://github.com/jorgebastida/awslogs).
-  - `cluster-status.sh` can export the JSON payload returned by `aws sagemaker
-    describe-cluster ...` into the JSON format for `cluster-config.json`. Useful to regenerate a
-    `cluster-config.json` for another deployment.
+  - `cluster-status.sh` can export the JSON payload returned by `aws sagemaker describe-cluster ...`
+    into the JSON format for `cluster-config.json`. Useful to regenerate a `cluster-config.json` for
+    another deployment.
   - `cluster-log.sh` supports watch mode and one-time mode. The watch mode implements retry logic to
     wait for LCC logs to appear in your Cloudwatch log streams. Require
     [awslogs](https://github.com/jorgebastida/awslogs).

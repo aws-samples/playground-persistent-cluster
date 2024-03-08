@@ -1,7 +1,7 @@
 # How to navigate this repo
 
 This repo is a concise (and opinionated) quickstart to setup an advance Amazon SageMaker HyperPod
-cluster.
+cluster. Our motto is _happy coding and experimenting!_
 
 - **It assumes some level of familiarities with AWS CLI.**
 
@@ -60,3 +60,5 @@ cluster.
 
     You may also set the `AWS_ACCOUNT` environment variable in advance to easily use this in various
     places (e.g., to include account id in your S3 bucket to ensure uniqueness).
+
+_Happy coding and experimenting!_
