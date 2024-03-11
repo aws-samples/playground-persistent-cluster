@@ -41,11 +41,7 @@ parse_args() {
         esac
     done
 
-    if [[ "$cluster_name" == "" ]]; then
-        echo "Must define a cluster name"
-        exit -1
-    fi
-
+    [[ "$cluster_name" != "" ]] || { echo "Must define a cluster name" ; exit -1 ; }
     [[ "${SMHP_REGION}" == "" ]] || aws_cli_args+=(--region $SMHP_REGION)
 }
 

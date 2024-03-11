@@ -8,13 +8,16 @@ declare -a HELP=(
     "[-r|--region]"
     "[-p|--profile]"
     "[-w|--watch]"
+    "[-e|--except-running]"
     "CLUSTER_NAME"
 )
 
 : "${SMHP_REGION:=}"
 declare -a aws_cli_args=()
 cluster_name=""
+EXCEPT_RUNNING=0
 WATCH=0
+jq_filter="."
 
 parse_args() {
     local key
@@ -38,6 +41,10 @@ parse_args() {
             WATCH=1
             shift
             ;;
+        -e|--except-running)
+            jq_filter='{ClusterNodeSummaries: [.ClusterNodeSummaries[] | select( .InstanceStatus.Status != "Running")]}'
+            shift
+            ;;
         *)
             [[ "$cluster_name" == "" ]] \
                 && cluster_name="$key" \
@@ -47,11 +54,7 @@ parse_args() {
         esac
     done
 
-    if [[ "$cluster_name" == "" ]]; then
-        echo "Must define a cluster name"
-        exit -1
-    fi
-
+    [[ "$cluster_name" != "" ]] ||  { echo "Must define a cluster name" ; exit -1 ; }
     [[ "${SMHP_REGION}" == "" ]] || aws_cli_args+=(--region $SMHP_REGION)
 }
 
@@ -61,9 +64,9 @@ if [[ $WATCH == 1 ]]; then
     watch --color -n60 "
 echo Press ^C to exit...
 set -x
-aws sagemaker list-cluster-nodes ${aws_cli_args[@]} --cluster-name $cluster_name | jq -C .
+aws sagemaker list-cluster-nodes ${aws_cli_args[@]} --cluster-name $cluster_name | jq -C $(printf '%q' "$jq_filter")
 "
 else
     set -x
-    aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name | jq .
+    aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name | jq "${jq_filter}"
 fi
