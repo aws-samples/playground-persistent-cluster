@@ -15,7 +15,7 @@ declare -a HELP=(
 : "${SMHP_REGION:=}"
 declare -a args=()
 cluster_name=""
-node_group="controller-machine"
+node_group="compute-nodes"
 AWSLOGS_ARGS=0
 
 parse_args() {
@@ -24,7 +24,7 @@ parse_args() {
         key="$1"
         case $key in
         -h|--help)
-            echo "Create a tmux session to watch the status and logs of cluster creation. By default, watch the controller node."
+            echo "Create a tmux session to watch the status and logs of cluster update. By default, watch one of the new compute nodes."
             echo "Usage: $(basename ${BASH_SOURCE[0]}) ${HELP[@]}"
             exit 0
             ;;
@@ -57,14 +57,20 @@ parse_args() {
         esac
     done
 
-    [[ "$cluster_name" != "" ]] || { echo "Must define a cluster name" ; exit -1 ; }
+    [[ "$cluster_name" == "" ]] && { echo "Must define a cluster name" ; exit -1 ; } || true
 }
 
 parse_args $@
 set -x
+
+#cluster-log.sh "${args[@]}" ${cluster_name} --watch -g ${node_group} -f --except-running -- "${awslogs_cli_args[@]}"
+
 tmux \
     new-session "cluster-status.sh ${args[@]} ${cluster_name} --watch" ';' \
-    split-window -h "sleep 1 ; cluster-log.sh ${args[@]} ${cluster_name} -g ${node_group} --watch -f -- ${awslogs_cli_args[@]}" ';' \
+    split-window -h "sleep 1 ; cluster-log.sh ${args[@]} ${cluster_name} --watch -g ${node_group} -f --except-running -- ${awslogs_cli_args[@]}" ';' \
+    select-pane -l ';' \
+    split-window "sleep 1 ; cluster-nodes.sh ${args[@]} ${cluster_name} --watch --except-running" ';' \
+    select-pane -R ';' \
     set -w remain-on-exit on ';' \
     bind-key e kill-session ';' \
     rename-window "Press C-e to exit... (By default: C is Ctrl-B)"

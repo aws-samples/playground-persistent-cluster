@@ -12,11 +12,12 @@ declare -a HELP=(
     "[-h|--help]"
     "[-r|--region]"
     "[-p|--profile]"
-    "[-c|--controller-group]"
+    "[-g|--instance-group]"
     "[-d|--cluster-id CLUSTER_ID]"
     "[-i|--instance-id INSTANCE_ID]"
     "[-w|--watch]"
     "[-f|--force-retry]"
+    "[-e|--except-running]"
     "CLUSTER_NAME"
     "[-- AWSLOGS_CLI_ARGS]"
 )
@@ -31,6 +32,7 @@ cluster_id=""
 instance_id=""
 WATCH=0
 FORCE_RETRY=0
+EXCEPT_RUNNING=0
 AWSLOGS_ARGS=0
 
 parse_args() {
@@ -43,7 +45,7 @@ parse_args() {
             echo "Usage: $(basename ${BASH_SOURCE[0]}) ${HELP[@]}"
             exit 0
             ;;
-        -c|--controller-group)
+        -g|--instance-group)
             node_group="$2"
             shift 2
             ;;
@@ -72,6 +74,10 @@ parse_args() {
             FORCE_RETRY=1
             shift
             ;;
+        -e|--except-running)
+            EXCEPT_RUNNING=1
+            shift
+            ;;
         --)
             AWSLOGS_ARGS=1
             shift
@@ -89,7 +95,7 @@ parse_args() {
         esac
     done
 
-    [[ "$cluster_name" == "" ]] && { echo "Must define a cluster name" ; exit -1 ;  }
+    [[ "$cluster_name" != "" ]] || { echo "Must define a cluster name" ; exit -1 ;  }
     [[ "${SMHP_REGION}" == "" ]] ||  { aws_cli_args+=(--region $SMHP_REGION) ; awslogs_cli_args+=(--aws-region=$SMHP_REGION) ;}
 }
 
@@ -104,8 +110,12 @@ echo "Cluster id: ${cluster_id}"
 echo "Cloudwatch log group: ${group}"
 
 get_instance_id_and_logstream() {
+    local jq_filter
+    [[ $EXCEPT_RUNNING == 0 ]] \
+        && jq_filter='.ClusterNodeSummaries[0].InstanceId' \
+        || jq_filter='[.ClusterNodeSummaries[] | select( .InstanceStatus.Status != "Running")][0].InstanceId'
     [[ $instance_id == "" || $instance_id == "null" ]] \
-        && instance_id=$(aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" --cluster-name $cluster_name --instance-group-name-contains ${node_group} | jq -r '.ClusterNodeSummaries[0].InstanceId' )
+        && instance_id=$(aws sagemaker list-cluster-nodes "${aws_cli_args[@]}" "${lcn_args[@]}" --cluster-name $cluster_name --instance-group-name-contains ${node_group} | jq -r "$jq_filter" )
     stream=LifecycleConfig/$node_group/$instance_id
     echo "Node Group: ${node_group}"
     echo "Instance id: ${instance_id}"
@@ -128,7 +138,7 @@ if [[ $WATCH == 1 ]]; then
         # - if this happens after a few retries, probably create-cluster is ongoing. Continue retry.
         # - else, logstream is too far back. In this case, user must re-execute with -- -s<XXX>.
         RETVAL=$?
-        if (( $RETVAL != 1 && ${FORCE_RETRY} == 0 && $i <= 1 )); then
+        if (( $RETVAL == 0 || (( $RETVAL == 7 && ${FORCE_RETRY} == 0 )) )); then
             break
         fi
 

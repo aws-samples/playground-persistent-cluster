@@ -27,8 +27,9 @@ repo](doc/ABOUT.md) resonates with you, before making an informed decision.
 - disable and mask [GDM (GNOME Display
   Manager)](https://en.wikipedia.org/wiki/GNOME_Display_Manager).
 - utility scripts for SMHP client ([bin/](bin/)). Non-exhaustive highlights:
-  - `dashboard-cluster-creation.sh` to show side-by-side the cluster-creation status and the
-    controller logs. Require [tmux](https://github.com/tmux/tmux/wiki) and
+  - `dashboard-cluster-creation.sh` and `dashboard-cluster-update.sh` to show side-by-side the
+    cluster creation or update status, and the controller logs. Require
+    [tmux](https://github.com/tmux/tmux/wiki) and
     [awslogs](https://github.com/jorgebastida/awslogs).
   - `cluster-status.sh` can export the JSON payload returned by `aws sagemaker describe-cluster ...`
     into the JSON format for `cluster-config.json`. Useful to regenerate a `cluster-config.json` for
