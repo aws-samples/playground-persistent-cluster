@@ -60,11 +60,12 @@ parse_args() {
     [[ "$cluster_name" != "" ]] || { echo "Must define a cluster name" ; exit -1 ; }
 }
 
+BIN_DIR=$(dirname $(realpath ${BASH_SOURCE[@]}))
 parse_args $@
 set -x
 tmux \
-    new-session "cluster-status.sh ${args[@]} ${cluster_name} --watch" ';' \
-    split-window -h "sleep 1 ; cluster-log.sh ${args[@]} ${cluster_name} -g ${node_group} --watch -f -- ${awslogs_cli_args[@]}" ';' \
+    new-session "${BIN_DIR}/cluster-status.sh ${args[@]} ${cluster_name} --watch" ';' \
+    split-window -h "sleep 1 ; ${BIN_DIR}/cluster-log.sh ${args[@]} ${cluster_name} -g ${node_group} --watch -f -- ${awslogs_cli_args[@]}" ';' \
     set -w remain-on-exit on ';' \
     bind-key e kill-session ';' \
     rename-window "Press C-e to exit... (By default: C is Ctrl-B)"

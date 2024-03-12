@@ -3,8 +3,7 @@
 [[ "$1" == "" ]] && NODE_TYPE=other || NODE_TYPE="$1"
 
 set -exuo pipefail
-
-BIN_DIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
+BIN_DIR=$(dirname $(realpath ${BASH_SOURCE[@]}))
 
 ################################################################################
 # Install enroot & pyxis

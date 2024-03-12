@@ -4,7 +4,7 @@
 
 set -exuo pipefail
 
-BIN_DIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
+BIN_DIR=$(dirname $(realpath ${BASH_SOURCE[@]}))
 chmod ugo+x $BIN_DIR/initsmhp/*.sh
 
 bash -x $BIN_DIR/initsmhp/disable-gui.sh

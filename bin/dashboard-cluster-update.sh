@@ -60,16 +60,14 @@ parse_args() {
     [[ "$cluster_name" == "" ]] && { echo "Must define a cluster name" ; exit -1 ; } || true
 }
 
+BIN_DIR=$(dirname $(realpath ${BASH_SOURCE[@]}))
 parse_args $@
 set -x
-
-#cluster-log.sh "${args[@]}" ${cluster_name} --watch -g ${node_group} -f --except-running -- "${awslogs_cli_args[@]}"
-
 tmux \
-    new-session "cluster-status.sh ${args[@]} ${cluster_name} --watch" ';' \
-    split-window -h "sleep 1 ; cluster-log.sh ${args[@]} ${cluster_name} --watch -g ${node_group} -f --except-running -- ${awslogs_cli_args[@]}" ';' \
+    new-session "${BIN_DIR}/cluster-status.sh ${args[@]} ${cluster_name} --watch" ';' \
+    split-window -h "sleep 1 ; ${BIN_DIR}/cluster-log.sh ${args[@]} ${cluster_name} --watch -g ${node_group} -f --except-running -- ${awslogs_cli_args[@]}" ';' \
     select-pane -l ';' \
-    split-window "sleep 1 ; cluster-nodes.sh ${args[@]} ${cluster_name} --watch --except-running" ';' \
+    split-window "sleep 1 ; ${BIN_DIR}/cluster-nodes.sh ${args[@]} ${cluster_name} --watch --except-running" ';' \
     select-pane -R ';' \
     set -w remain-on-exit on ';' \
     bind-key e kill-session ';' \

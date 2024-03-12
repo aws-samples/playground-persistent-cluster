@@ -9,7 +9,7 @@ export DEBIAN_FRONTEND=noninteractive
 add-apt-repository ppa:git-core/ppa -y
 apt -o DPkg::Lock::Timeout=120 update
 
-declare -a PKG=(unzip tree fio dstat dos2unix tig jq ncdu inxi mediainfo git-lfs nvme-cli aria2 ripgrep bat python3-venv python3-pip)
+declare -a PKG=(git unzip tree fio dstat dos2unix tig jq ncdu inxi mediainfo git-lfs nvme-cli aria2 ripgrep bat python3-venv python3-pip)
 [[ $(apt-cache search ^duf$) ]] && PKG+=(duf)
 
 apt-get -y -o DPkg::Lock::Timeout=120 install "${PKG[@]}"

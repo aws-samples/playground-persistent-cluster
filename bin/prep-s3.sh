@@ -2,22 +2,7 @@
 
 set -euo pipefail
 
-# Utility function to get script's directory (deal with Mac OSX quirkiness).
-# This function is ambidextrous as it works on both Linux and OSX.
-get_bin_dir() {
-    local READLINK=readlink
-    if [[ $(uname) == 'Darwin' ]]; then
-        READLINK=greadlink
-        if [ $(which greadlink) == '' ]; then
-            echo '[ERROR] Mac OSX requires greadlink. Install with "brew install greadlink"' >&2
-            exit 1
-        fi
-    fi
-
-    local BIN_DIR=$(dirname "$($READLINK -f ${BASH_SOURCE[0]})")
-    echo -n ${BIN_DIR}
-}
-BIN_DIR=$(get_bin_dir)
+BIN_DIR=$(dirname $(realpath ${BASH_SOURCE[@]}))
 SRC_DIR=$(dirname $BIN_DIR)/src
 cd $SRC_DIR
 
