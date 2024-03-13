@@ -3,7 +3,7 @@
 This repo provides a git-centric workflow to deploy Amazon SageMaker HyperPod clusters, with
 quality-of-life improvements and advance architecture.
 
-![Architecture](doc/architecture.png)
+![Architecture](doc/architecture.jpg)
 
 Unsure if this repo is right for you? Not to worry, we invite you to check if the [vibe of this
 repo](doc/ABOUT.md) resonates with you, before making an informed decision.
