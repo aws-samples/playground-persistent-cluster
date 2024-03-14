@@ -54,6 +54,6 @@ $BIN_DIR/prep-s3.sh
 
 set -x
 aws sagemaker create-cluster "${aws_cli_args[@]}" \
-    --cli-input-json file://cluster-config.json \
+    --cli-input-yaml file://cluster-config.yaml \
     --cluster-name "${cluster_name}" \
     | jq .

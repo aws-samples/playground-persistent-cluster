@@ -48,6 +48,6 @@ parse_args() {
 parse_args $@
 set -x
 aws sagemaker update-cluster "${aws_cli_args[@]}" \
-    --instance-groups file://cluster-config-update.json \
+    --cli-input-yaml file://cluster-config-update.yaml \
     --cluster-name "${cluster_name}" \
     | jq .
