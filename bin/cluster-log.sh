@@ -124,11 +124,11 @@ get_instance_id_and_logstream() {
 
 
 if [[ $WATCH == 1 ]]; then
-    get_instance_id_and_logstream
     cmd="$awslogs_prefix awslogs get -GS $group $stream --watch -i 30 -s10min ${awslogs_cli_args[@]}"
     set +e
     MAX_ATTEMPTS=10
     for(( i=1; i <= ${MAX_ATTEMPTS}; ++i)) do
+        get_instance_id_and_logstream
         echo To fetch log with this command: "$cmd"
         $cmd
 
