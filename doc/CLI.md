@@ -25,7 +25,7 @@ We assume `bin/` has been added to `PATH`, otherwise please run the command as `
 
 ### 1.1. Watch cluster creation
 
-To watch cluster creation, use `dashboard-cluster-creation.sh <CLUSTER_NAME>`. This starts a `tmux`
+To watch cluster creation, use `dashboard-cluster-create.sh <CLUSTER_NAME>`. This starts a `tmux`
 session with two panes (see screenshot below). The left pane shows the cluster status, and the right
 pane streams streams the CloudWatch logs of the *first* instance in the controller group
 (customizable).
@@ -36,15 +36,15 @@ More examples:
 
 ```console
 # By default, stream the log of the first instance in InstanceGroup `controller-machine`.
-$ dashboard-cluster-creation.sh <CLUSTER_NAME>
+$ dashboard-cluster-create.sh <CLUSTER_NAME>
 
 # To stream from another instance group
-$ dashboard-cluster-creation.sh <CLUSTER_NAME> -g <INSTANCE_GROUP_NAME>
+$ dashboard-cluster-create.sh <CLUSTER_NAME> -g <INSTANCE_GROUP_NAME>
 
 # By default, stream the log since the past 10 minutes. To watch a cluster created long time ago
 # (e.g., 4 days ago), add `-- -s4d`. Refer to awslogs documentation for the exact syntax of `-s`.
-$ dashboard-cluster.creation.sh <CLUSTER_NAME> -- -s4d
-$ dashboard-cluster.creation.sh <CLUSTER_NAME> -g <INSTANCE_GROUP_NAME> -- -s4d
+$ dashboard-cluster.create.sh <CLUSTER_NAME> -- -s4d
+$ dashboard-cluster.create.sh <CLUSTER_NAME> -g <INSTANCE_GROUP_NAME> -- -s4d
 ```
 
 ### 1.2. Watch cluster update
