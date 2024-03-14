@@ -27,12 +27,12 @@ repo](doc/ABOUT.md) resonates with you, before making an informed decision.
 - disable and mask [GDM (GNOME Display
   Manager)](https://en.wikipedia.org/wiki/GNOME_Display_Manager).
 - utility scripts for SMHP client ([bin/](bin/)). Non-exhaustive highlights:
-  - `dashboard-cluster-creation.sh` and `dashboard-cluster-update.sh` to show side-by-side the
+  - `dashboard-cluster-create.sh` and `dashboard-cluster-update.sh` to show side-by-side the
     cluster creation or update status, and the controller logs. Require
     [tmux](https://github.com/tmux/tmux/wiki) and
     [awslogs](https://github.com/jorgebastida/awslogs).
   - `cluster-status.sh` can export the JSON payload returned by `aws sagemaker describe-cluster ...`
-    into the JSON format for `cluster-config.json`. Useful to regenerate a `cluster-config.json` for
+    into the JSON format for `cluster-config.yaml`. Useful to regenerate a `cluster-config.yaml` for
     another deployment.
   - `cluster-log.sh` supports watch mode and one-time mode. The watch mode implements retry logic to
     wait for LCC logs to appear in your Cloudwatch log streams. Require
@@ -68,12 +68,12 @@ cfn.sh
 # Step 1.6. Create AWS Managed MS AD with LDAPS endpoint
 
 # Step 1.7. Create SMHP cluster
-vi config-cluster.json src/lcc-data/provisioning_parameters.json
+vi config-cluster.yaml src/lcc-data/provisioning_parameters.json
 python3 bin/validate-config.py
 ## Optional: customize files under src/LifecycleScripts/base-config/ and/or src/lcc-data/
 # vi ...
 cluster-create.sh <CLUSTER_NAME> [--profile xxxxx]
-dashboard-cluster-creation.sh <CLUSTER_NAME> [--profile xxxxx]    # Optional
+dashboard-cluster-create.sh <CLUSTER_NAME> [--profile xxxxx]    # Optional
 ```
 
 Let us now proceed to the detail steps. Before proceeding, in case you don't wish to deploy an AD,
@@ -209,7 +209,7 @@ The expected outcomes of this section are:
 
 ### 1.7. Create SMHP cluster
 
-1. Review and edit `cluster-config.json`. As a rule of thumb, anything with `xxx` needs to be
+1. Review and edit `cluster-config.yaml`. As a rule of thumb, anything with `xxx` needs to be
    updated.
 2. Review and edit `src/lcc-data/*` files. As a rule of thumb, anything with `xxx` needs to be
    updated.
@@ -223,7 +223,7 @@ The expected outcomes of this section are:
    cluster-create.sh <CLUSTER_NAME> [--profile xxxx]
 
    # Optional: side-by-side displays of cluster status and controller logs. Need awslogs and tmux.
-   dashboard-cluster-creation.sh <CLUSTER_NAME> [--profile xxxxx]
+   dashboard-cluster-create.sh <CLUSTER_NAME> [--profile xxxxx]
    ```
 
 ## 2. Access HyperPod cluster
