@@ -124,7 +124,7 @@ get_instance_id_and_logstream() {
 
 
 if [[ $WATCH == 1 ]]; then
-    cmd="$awslogs_prefix awslogs get -GS $group $stream --watch -i 60 -s10min ${awslogs_cli_args[@]}"
+    cmd="$awslogs_prefix awslogs get -GS $group $stream --watch -i 60 -s5min ${awslogs_cli_args[@]}"
     set +e
     MAX_ATTEMPTS=10
     for(( i=1; i <= ${MAX_ATTEMPTS}; ++i)) do

@@ -9,7 +9,7 @@ if nvidia-smi; then
     DCGM_EXPORTER_VERSION=3.3.5-3.4.0-ubuntu22.04
 
     # Run the DCGM Exporter Docker container
-    sudo docker run -d --rm \
+    docker run -d --rm \
        --gpus all \
        --net host \
        --cap-add SYS_ADMIN \

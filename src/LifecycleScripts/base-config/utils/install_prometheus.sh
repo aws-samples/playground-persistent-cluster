@@ -52,20 +52,20 @@ cd prometheus-*-amd64
 
 # Move binaries to /usr/bin/
 echo "Moving Prometheus binaries to /usr/bin/"
-sudo mv prometheus /usr/bin/
-sudo mv promtool /usr/bin/
+mv prometheus /usr/bin/
+mv promtool /usr/bin/
 
 # Create Prometheus config directory
 echo "Creating Prometheus config directory"
-sudo mkdir -p /etc/prometheus
+mkdir -p /etc/prometheus
 
 # Move prometheus.yml to config directory
 echo "Moving prometheus.yml to /etc/prometheus/"
-sudo mv prometheus.yml /etc/prometheus/prometheus.yml
+mv prometheus.yml /etc/prometheus/prometheus.yml
 
 # Replace placeholders in the configuration template
 echo "Replacing placeholders in the Prometheus configuration template"
-sudo tee /etc/prometheus/prometheus.yml > /dev/null <<EOF
+tee /etc/prometheus/prometheus.yml > /dev/null <<EOF
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
@@ -97,7 +97,7 @@ EOF
 
 # Create Prometheus systemd service file
 echo "Creating Prometheus systemd service file"
-sudo tee /etc/systemd/system/prometheus.service > /dev/null <<EOF
+tee /etc/systemd/system/prometheus.service > /dev/null <<EOF
 [Unit]
 Description=Prometheus Exporter
 
@@ -114,7 +114,7 @@ EOF
 
 # Reload systemd and enable Prometheus service
 echo "Reloading systemd and enabling Prometheus service"
-sudo systemctl daemon-reload
-sudo systemctl enable --now prometheus
+systemctl daemon-reload
+systemctl enable --now prometheus
 
 echo "Prometheus setup completed successfully"
