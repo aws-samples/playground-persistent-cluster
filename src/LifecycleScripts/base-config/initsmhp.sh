@@ -41,3 +41,12 @@ if [[ "${NODE_TYPE}" == "controller" ]]; then
     cp $BIN_DIR/initsmhp/vimrc ~ubuntu/.vimrc && chown ubuntu:ubuntu ~ubuntu/.vimrc
     bash -x $BIN_DIR/initsmhp/howto-miniconda.sh
 fi
+
+# Placeholder for terminfo. No actual terminfo is setup. Instead, ubuntu user
+# must follow https://sw.kovidgoyal.net/kitty/kittens/ssh/ if needed.
+/bin/bash -c '
+if [[ ! -f ~/.terminfo/x/xterm-kitty ]]; then
+    mkdir -p ~/.terminfo/x/
+    ln -s ~ubuntu/.terminfo/x/xterm-kitty ~/.terminfo/x/
+fi
+'
