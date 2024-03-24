@@ -71,8 +71,8 @@ match RedundantSpaces /\s\+$/
 " Terminado supports 256 colors
 set t_Co=256
 set cursorline
-highlight CursorLine cterm=None ctermbg=237
-highlight CursorLineNr cterm=None ctermbg=237
+highlight CursorLine cterm=None ctermbg=236
+highlight CursorLineNr cterm=None ctermbg=236
 "colorscheme delek
 "colorscheme elflord
 "colorscheme murphy
