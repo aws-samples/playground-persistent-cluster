@@ -28,6 +28,7 @@ bash -x $BIN_DIR/initsmhp/fix-profile.sh
 bash -x $BIN_DIR/initsmhp/ssh-to-compute.sh
 bash -x $BIN_DIR/initsmhp/adjust-git.sh
 bash -x $BIN_DIR/initsmhp/fix-bash.sh /etc/skel/.bashrc
+cp $BIN_DIR/initsmhp/vimrc /etc/skel/.vimrc.initsmhp
 
 # /opt/ml/config/resource_config.json is not world-readable, so take only the part that later-on
 # used for ssh-keygen comment.
@@ -37,5 +38,6 @@ if [[ "${NODE_TYPE}" == "controller" ]]; then
     echo "[INFO] This is a Controller node."
     runuser -l ubuntu $BIN_DIR/initsmhp/gen-keypair-ubuntu.sh
     bash -x $BIN_DIR/initsmhp/fix-bash.sh ~ubuntu/.bashrc
+    cp $BIN_DIR/initsmhp/vimrc ~ubuntu/.vimrc && chown ubuntu:ubuntu ~ubuntu/.vimrc
     bash -x $BIN_DIR/initsmhp/howto-miniconda.sh
 fi

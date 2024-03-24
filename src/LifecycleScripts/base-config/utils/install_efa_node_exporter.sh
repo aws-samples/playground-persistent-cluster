@@ -8,6 +8,7 @@ git clone https://github.com/aws-samples/awsome-distributed-training.git || { ec
 cd awsome-distributed-training/4.validation_and_observability/3.efa-node-exporter || { echo "Failed to change directory"; exit 1; }
 
 # Build the Docker image explicitly
+echo $(basename "${BASH_SOURCE[@]}"): Build docker image
 sed -i 's/-xvf/-xf/' Dockerfile   # Remove 14k lines of logs, in case Dockerfile tar -xvf the golang archive
 docker build --quiet -t node_exporter_efa:latest . && echo Build completed || { echo "Failed to build Docker image"; exit 1; }
 
