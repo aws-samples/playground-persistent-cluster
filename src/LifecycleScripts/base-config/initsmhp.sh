@@ -28,7 +28,7 @@ bash -x $BIN_DIR/initsmhp/fix-profile.sh
 bash -x $BIN_DIR/initsmhp/ssh-to-compute.sh
 bash -x $BIN_DIR/initsmhp/adjust-git.sh
 bash -x $BIN_DIR/initsmhp/fix-bash.sh /etc/skel/.bashrc
-cp $BIN_DIR/initsmhp/vimrc /etc/skel/.vimrc.initsmhp
+cp $BIN_DIR/initsmhp/vimrc /etc/skel/.vimrc
 
 # /opt/ml/config/resource_config.json is not world-readable, so take only the part that later-on
 # used for ssh-keygen comment.
