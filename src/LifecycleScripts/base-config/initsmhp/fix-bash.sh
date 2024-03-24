@@ -40,6 +40,7 @@ man() {
 
 # Custom aliases
 alias ll='ls -alF --color=auto'
+alias ncdu='ncdu --color dark'
 EOF
 fi
 
