@@ -79,6 +79,7 @@ highlight CursorLineNr cterm=None ctermbg=236
 "colorscheme ron
 highlight colorColumn ctermbg=237
 
-if exists('$KITTY_WINDOW_ID')
+" https://github.com/kovidgoyal/kitty/issues/108
+if exists('$KITTY_WINDOW_ID') || $TERM == "xterm-kitty"
     let &t_ut=''
 endif
