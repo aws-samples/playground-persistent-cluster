@@ -9,7 +9,7 @@ Unsure if this repo is right for you? Not to worry, we invite you to check if th
 repo](doc/ABOUT.md) resonates with you, before making an informed decision.
 
 <details>
-<summary><b>Differences against <a href="https://github.com/aws-samples/awsome-distributed-training/tree/b72144be6f6ebf3ee4cd271bc5b2964931e4e094">adt#b72144b</a></b></summary>
+<summary><b>Differences against <a href="https://github.com/aws-samples/awsome-distributed-training/tree/760c0b902ae6d97d652d51b111750c5d013323b7">adt#760c0b9</a></b></summary>
 
 - deprecate timesync LCC. Script is still available for older clusters that need it applied in
   ad-hoc fashion (and it ensures chrony does not start with a network namespace).
