@@ -1,5 +1,46 @@
 # History
 
+## Tag v2403.02
+
+### Differences against [adt#760c0b9](https://github.com/aws-samples/awsome-distributed-training/tree/760c0b902ae6d97d652d51b111750c5d013323b7)
+
+- deprecate timesync LCC. Script is still available for older clusters that need it applied in
+  ad-hoc fashion (and it ensures chrony does not start with a network namespace).
+- hardened `setup_mariadb_accounting.sh`.
+- allow ssh to compute nodes without host keys.
+- enable [enroot containers](https://github.com/NVIDIA/enroot), but disable the CLIs for non-root
+  users on login and controller nodes which may have insufficient root volume for container
+  operations. Non-root users must perform container operations (e.g., build images) on compute nodes
+  with NVMe.
+- enable multi-users via LDAPS. Note that're two independent parts:
+  - an [example](#36-create-a-new-aws-managed-microsoft-ad-with-ldaps-endpoint) to setup an LDAPS
+    endpoint. Ignore this when you have an existing LDAPS.
+  - an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
+    to an LDAPS endpoint.
+- disable and mask [GDM (GNOME Display
+  Manager)](https://en.wikipedia.org/wiki/GNOME_Display_Manager).
+- utility scripts for SMHP client ([bin/](bin/)). Non-exhaustive highlights:
+  - `dashboard-cluster-create.sh` and `dashboard-cluster-update.sh` to show side-by-side the
+    cluster creation or update status, and the controller logs. Require
+    [tmux](https://github.com/tmux/tmux/wiki) and
+    [awslogs](https://github.com/jorgebastida/awslogs).
+  - `cluster-status.sh` can export the JSON payload returned by `aws sagemaker describe-cluster ...`
+    into the JSON format for `cluster-config.yaml`. Useful to regenerate a `cluster-config.yaml` for
+    another deployment.
+  - `cluster-log.sh` supports watch mode and one-time mode. The watch mode implements retry logic to
+    wait for LCC logs to appear in your Cloudwatch log streams. Require
+    [awslogs](https://github.com/jorgebastida/awslogs).
+  - `show-az.sh` to quickly maps AZ name to AZ id. Typically used when planning cluster deployment.
+- utility scripts for the cluster ([src/sample-slurm-jobs/](/src/sample-slurm-jobs/)): trigger
+   unhealthy instance and auto-resume Slurm step, probe ami, etc.
+- other opinionated changes to shell and environment. Feel free to customize the
+   [initsmhp](src/LifecycleScripts/base-config/initsmhp.sh) scripts.
+
+### Changelogs
+
+- new `bin/` utilities: `dashboard-cluster-create.sh` and `dashboard-cluster-update.sh`.
+- change config cluster from JSON to YAML.
+
 ## Tag v2403.01
 
 ### Differences against [adt#39ca357](https://github.com/aws-samples/awsome-distributed-training/tree/39ca357f7a3df841ffd1232221cd12afcf791c30)
