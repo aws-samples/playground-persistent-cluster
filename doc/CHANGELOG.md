@@ -17,6 +17,8 @@
     endpoint. Ignore this when you have an existing LDAPS.
   - an [LCC script](src/LifecycleScripts/base-config/setup_sssd4ldaps.sh) to get a cluster connect
     to an LDAPS endpoint.
+- hold Lustre client module to prevent accidental kernel upgrade
+- install a mock .deb package to prevent accidental upgrade to GPU driver
 - disable and mask [GDM (GNOME Display
   Manager)](https://en.wikipedia.org/wiki/GNOME_Display_Manager).
 - utility scripts for SMHP client ([bin/](bin/)). Non-exhaustive highlights:
