@@ -6,4 +6,4 @@
 set -exuo pipefail
 cd /tmp
 wget https://s3.amazonaws.com/mountpoint-s3-release/latest/x86_64/mount-s3.deb
-apt-get install ./mount-s3.deb
+apt-get install -y -o DPkg::Lock::Timeout=120 ./mount-s3.deb

@@ -7,7 +7,7 @@ if systemctl is-active --quiet slurmctld; then
     # Check if Go is installed, if not, install it
     if ! command -v go &> /dev/null; then
         echo "Go is not installed. Installing Go..."
-        apt install -y golang
+        apt install -y -o DPkg::Lock::Timeout=120 golang
     else
         echo "Go is already installed."
     fi

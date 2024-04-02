@@ -44,7 +44,7 @@ LDAP_DEFAULT_AUTHTOK=$(aws secretsmanager get-secret-value \
 )
 
 apt-get -y -o DPkg::Lock::Timeout=120 update
-apt-get install -y sssd
+apt-get install -y -o DPkg::Lock::Timeout=120 sssd
 cat << EOF > /etc/sssd/sssd.conf
 [domain/default]
 cache_credentials = True

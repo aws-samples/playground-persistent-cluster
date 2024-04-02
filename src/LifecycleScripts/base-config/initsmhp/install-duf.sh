@@ -17,4 +17,4 @@ LATEST_DOWNLOAD_URL=$(latest_download_url)
 DEB=${LATEST_DOWNLOAD_URL##*/}
 (cd /tmp/ && curl -LO ${LATEST_DOWNLOAD_URL})
 
-apt install -y /tmp/$DEB && rm /tmp/$DEB
+apt install -y -o DPkg::Lock::Timeout=120 /tmp/$DEB && rm /tmp/$DEB

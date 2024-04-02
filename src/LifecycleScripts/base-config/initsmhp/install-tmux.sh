@@ -18,7 +18,7 @@ get_latest_download() {
 curl -LO $(get_latest_download)
 
 VERSION=$(get_latest_release)
-apt install -y libevent-dev ncurses-dev gcc make bison pkg-config
+apt install -y -o DPkg::Lock::Timeout=120 libevent-dev ncurses-dev gcc make bison pkg-config
 tar -xzf tmux-$VERSION.tar.gz
 cd tmux-$VERSION/
 ./configure &> /tmp/tmux-00-configure.txt
