@@ -20,6 +20,7 @@ declare -a PKGS_SCRIPTS=(
     install-s5cmd.sh
     install-tmux.sh
     install-mount-s3.sh
+    install-git-remote-codecommit.sh
 )
 mkdir /var/log/initsmhp
 for i in "${PKGS_SCRIPTS[@]}"; do
@@ -46,8 +47,9 @@ if [[ "${NODE_TYPE}" == "controller" ]]; then
     bash -x $BIN_DIR/initsmhp/howto-miniconda.sh
 fi
 
-# Placeholder for terminfo. No actual terminfo is setup. Instead, ubuntu user
-# must follow https://sw.kovidgoyal.net/kitty/kittens/ssh/ if needed.
+# Placeholder for xterm-kitty terminfo. No actual terminfo is setup. Instead,
+# ubuntu user must follow https://sw.kovidgoyal.net/kitty/kittens/ssh/ (only
+# when ssh-ing from this particular terminal emulator).
 /bin/bash -c '
 if [[ ! -f ~/.terminfo/x/xterm-kitty ]]; then
     mkdir -p ~/.terminfo/x/
