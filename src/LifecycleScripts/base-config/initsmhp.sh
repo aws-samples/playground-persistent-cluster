@@ -4,13 +4,9 @@
 
 set -exuo pipefail
 
-# Don't let new lustre client module brings in new kernel.
-echo "lustre-client-modules-aws hold" | sudo dpkg --set-selections
-
 BIN_DIR=$(dirname $(realpath ${BASH_SOURCE[@]}))
 chmod ugo+x $BIN_DIR/initsmhp/*.sh
 
-bash -x $BIN_DIR/initsmhp/mock-gpu-driver-deb.sh
 bash -x $BIN_DIR/initsmhp/disable-gui.sh
 
 declare -a PKGS_SCRIPTS=(

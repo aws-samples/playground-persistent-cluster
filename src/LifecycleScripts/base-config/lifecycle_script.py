@@ -125,6 +125,8 @@ def main(args):
        print(f"Mount fsx: {fsx_dns_name}. Mount point: {fsx_mountname}")
        ExecuteBashScript("./mount_fsx.sh").run(fsx_dns_name, fsx_mountname)
 
+    ExecuteBashScript("./add_users.sh").run()
+
     if params.workload_manager == "slurm":
         # Wait until slurm will be configured
         controllers = resource_config.get_list_of_addresses(params.controller_group)
@@ -148,6 +150,7 @@ def main(args):
         if node_type == SlurmNodeType.HEAD_NODE:
             ExecuteBashScript("./setup_mariadb_accounting.sh").run()
 
+        ExecuteBashScript("./apply_hotfix.sh").run(node_type)
         ExecuteBashScript("./utils/motd.sh").run(node_type)
         ExecuteBashScript("./start_slurm.sh").run(node_type, ",".join(controllers))
         ExecuteBashScript("./setup_sssd4ldaps.sh").run()
@@ -167,8 +170,6 @@ def main(args):
         # Note: comment the below lines to skip opininated environment setup
         ExecuteBashScript("./relocate_home.sh").run(node_type)
         ExecuteBashScript("./initsmhp.sh").run(node_type)
-
-        ExecuteBashScript("./add_users.sh").run()
 
     print("[INFO]: Success: All provisioning scripts completed")
 
