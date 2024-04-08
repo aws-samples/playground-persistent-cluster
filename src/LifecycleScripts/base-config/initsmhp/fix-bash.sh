@@ -31,6 +31,9 @@ export MANPAGER=most
 # Custom aliases
 alias ll='ls -alF --color=auto'
 alias ncdu='ncdu --color dark'
+
+# Sometime bind keys are missing in vscode integrated terminal
+bind -f /opt/inputrc-osx
 EOF
 fi
 
