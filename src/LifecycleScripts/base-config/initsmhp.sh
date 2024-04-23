@@ -4,6 +4,10 @@
 
 set -exuo pipefail
 
+# Remember to ensure this script runs after hotfix, to prevent updates on specific packages.
+# Once cluster is ready, check whether needs to reboot: src/sample-slurm-jobs/check-need-reboot.sh.
+apt -o DPkg::Lock::Timeout=120 -y upgrade -V
+
 BIN_DIR=$(dirname $(realpath ${BASH_SOURCE[@]}))
 chmod ugo+x $BIN_DIR/initsmhp/*.sh
 
