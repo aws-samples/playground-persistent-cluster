@@ -45,11 +45,21 @@ usermod -aG docker ubuntu
 #
 # Docker workdir doesn't like Lustre. Tried with storage driver overlay2, fuse-overlayfs, & vfs.
 if [[ $(mount | grep /opt/dlami/nvme) ]]; then
-    cat <<EOL >> /etc/docker/daemon.json
-{
-    "data-root": "/opt/dlami/nvme/docker/data-root"
-}
-EOL
+
+    # Nvidia-docker runtime creates /etc/docker/daemon.json, so we cannot just blindly append
+    # a new JSON line.
+    /usr/bin/python3 -c "
+import json
+
+with open('/etc/docker/daemon.json') as f:
+    d = json.load(f)
+
+d['data-root'] = '/opt/dlami/nvme/docker/data-root'
+
+with open('/etc/docker/daemon.json', 'w') as f:
+    json.dump(d, f, indent=4)
+    f.write('\n')
+"
 
     sed -i \
         's|^\[Service\]$|[Service]\nEnvironment="DOCKER_TMPDIR=/opt/dlami/nvme/docker/tmp"|' \
